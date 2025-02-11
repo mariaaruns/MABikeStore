@@ -1,0 +1,84 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Sections
+@* <div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+ *@
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<style>
+
+</style>
+
+<MudLayout>
+    <MudAppBar  >
+          <MudIconButton Icon="@Icons.Material.Filled.ViewSidebar" Color="Color.Inherit"  Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" /> 
+        <BikeStore.UI.Components.StoreDropdown />
+        <MudSpacer />
+        <SectionOutlet SectionName="page-title">
+        </SectionOutlet>
+
+        <MudSpacer />
+        <BikeStore.UI.Components.AuthLinks/>
+    </MudAppBar >
+    <MudDrawer OpenChanged="DrawerToggle" @ref="mudDrawer" OpenMiniOnHover="true" Variant="DrawerVariant.Mini" Open="_drawerOpen" Overlay="true" OverlayAutoClose="true">
+        <NavMenu UserName="@userName" />
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+
+</MudLayout>
+
+
+@code {
+    bool _drawerOpen = !true;
+    private string userName { get; set; } = string.Empty;
+    private MudDrawer mudDrawer;
+    // public void OnOpen() {
+    //     _drawerOpen = !_drawerOpen;
+    //     if (_drawerOpen == true)
+    //     {
+    //         userName = "Maria Arun";
+    //     }
+    //     else { 
+    //         userName = "";
+    //     }
+    // }
+
+
+    public void  DrawerToggle()
+    {
+
+        _drawerOpen = !_drawerOpen;
+       
+        if (_drawerOpen == true)
+        {
+            userName = "Maria Arun";
+        }
+        else
+        {
+            userName = "";
+        }
+     
+    }
+}

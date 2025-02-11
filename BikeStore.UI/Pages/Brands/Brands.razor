@@ -1,0 +1,27 @@
+﻿@page "/Brand"
+<SectionContent SectionName="page-title">
+    <MudChip T="string" Icon="@Icons.Material.Filled.Menu" Size="Size.Large" Color="Color.Dark" IconColor="Color.Success">Brands</MudChip>
+</SectionContent>
+
+
+
+<MudCard>
+    <MudTabs Elevation="2" Rounded="true" Centered="true">
+        <MudTabPanel Text="Active" BadgeData='"S"'>
+            <MudText>This is Active </MudText>
+            <BrandDataGrid Status="Active"></BrandDataGrid>
+        </MudTabPanel>
+        <MudTabPanel Text="Inactive" BadgeData='"..."' BadgeColor="Color.Dark" >
+            <MudText>This is In Active </MudText>
+            <BrandDataGrid Status="InActive"></BrandDataGrid>
+        </MudTabPanel>
+        @* <MudTabPanel Text="Up Coming" BadgeData='"N"' /> *@
+
+    </MudTabs>
+
+</MudCard>
+
+@code {
+    private string storeName { get; set; }
+}
+

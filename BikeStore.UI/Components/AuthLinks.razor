@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager _navigation
+
+
+
+<AuthorizeView>
+    <Authorized>
+
+        <MudMenu>
+            <ActivatorContent>
+                <MudAvatar>
+                    <MudImage Src="images/toiletvisit.jpg" />
+                </MudAvatar>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Label="@context.User.Identity?.Name" />
+               <MudDivider/>
+                <MudMenuItem Label="Profile" Href="/profile"/>
+                <MudMenuItem Label="Logout" Href="/logout" />
+            </ChildContent>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Login" OnClick="GotoLogin" >Login</MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+@code{
+    private void GotoLogin() {
+        _navigation.NavigateTo("Login");
+    }
+
+    private void GotoRegister()
+    {
+        _navigation.NavigateTo("Register");
+    }
+
+}

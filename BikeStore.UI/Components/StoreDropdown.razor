@@ -1,0 +1,40 @@
+﻿@using System.Globalization
+
+<style>
+    .txt_white{
+    color:white;
+    }
+    .drp_width{
+ padding:0px
+    }
+</style>
+
+<div class="w-auto">
+    <MudSelect  @bind-Value="enumValue" 
+    TransformOrigin="Origin.CenterCenter" 
+    Variant="Variant.Text"
+    AdornmentIcon="@Icons.Material.Filled.Store"
+               Adornment="Adornment.Start" Class="drp_width" InputClass="txt_white" OuterClass="txt_white" 
+    AdornmentColor="Color.Success">
+    @foreach (Store item in Enum.GetValues(typeof(Store)))
+    {
+        <MudSelectItem Value="@(item)">@item</MudSelectItem>
+    }
+</MudSelect>
+</div>
+@code {
+    @code {
+        private string stringValue { get; set; }
+        private Store enumValue { get; set; } = Store.SantaCruzBikes;
+        public enum Store
+        {
+            SantaCruzBikes,
+            BaldwinBikes ,
+            RowlettBikes 
+        }
+
+     //   private CultureInfo cultureValue { get; set; }
+      //  private Func<CultureInfo, string> convertFunc = ci => ci?.DisplayName;
+    }
+
+}

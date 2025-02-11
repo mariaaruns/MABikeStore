@@ -1,0 +1,25 @@
+﻿@inject NavigationManager _navigation
+
+
+
+<AuthorizeView>
+    <Authorized>
+        Hello, @context.User.Identity?.Name!
+        <a href="Logout">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton OnClick="GotoLogin" ButtonType="ButtonType.Button" Color="Color.Primary">Login</MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private void GotoLogin() {
+        _navigation.NavigateTo("Login");
+    }
+
+    private void GotoRegister()
+    {
+        _navigation.NavigateTo("Register");
+    }
+
+}

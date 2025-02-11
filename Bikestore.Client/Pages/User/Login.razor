@@ -1,0 +1,20 @@
+﻿@page "/login"
+@using BikeStore.Domain.DTO.Request.UserRequest
+@using BikeStore.Domain.DTO.Response.UserResponse
+@using Bikestore.Client.Services.Interface
+@inherits LoginBase
+@layout NoLayout
+
+
+@if (ShowAuthError)
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@Error</p>
+    </div>
+}
+
+
+@code {
+   
+
+}

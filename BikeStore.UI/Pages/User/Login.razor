@@ -1,0 +1,54 @@
+﻿@page "/login"
+@inherits LoginBase
+@layout NoLayout
+
+<style>
+    
+    body {
+        
+        background-image: url('uploads\images\10198651_4382036.svg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+    }
+  
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
+
+@if (ShowAuthError)
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@Error</p>
+    </div>
+}
+<div class="login-container">
+<MudCard Style="max-width: 600px; margin: auto; margin-top: 100px;">
+    <MudCardHeader>
+        <MudText Typo="Typo.h5" Align="Align.Center">Login</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudForm @ref="_form" Valid="HandleValidSubmit">
+            <MudTextField Label="Email" @bind-Value="LoginModel.UserName" For="@(() => LoginModel.UserName)"
+                          Required="true" RequiredError="Email is required"
+                           />
+            <MudTextField Label="Password" @bind-Value="LoginModel.Password" For="@(() => LoginModel.Password)"
+                          InputType="InputType.Password"
+                          Required="true" RequiredError="Password is required" />
+            <MudButton OnClick="Submit"  Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">
+                Login
+            </MudButton>
+        </MudForm>
+    </MudCardContent>
+</MudCard>
+</div>
+@code {
+   
+   
+  
+}
