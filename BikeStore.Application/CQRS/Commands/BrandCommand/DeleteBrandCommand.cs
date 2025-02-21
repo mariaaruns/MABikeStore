@@ -20,16 +20,12 @@ namespace BikeStore.Application.CQRS.Commands.BrandCommand
         }
         public async Task<bool> Handle(DeleteBrandCommand request, CancellationToken cancellationToken)
         {
-            var brand = await _unitOfWork.BrandRepository.GetByIdAsync(x => x.BrandId == request.id);
-            if (brand is null) {
-
+            var brand = await _unitOfWork.BrandRepository.DeleteBrandAsync(request.id);
+            if (!brand)
+            {
                 return false;
             }
-
-            await _unitOfWork.BrandRepository.DeleteAsync(brand);
-
             return await _unitOfWork.SaveAsync();
-            
         }
     }
 }

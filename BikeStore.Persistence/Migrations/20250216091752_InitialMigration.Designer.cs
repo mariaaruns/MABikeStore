@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BikeStore.Persistence.Migrations
 {
     [DbContext(typeof(BikeStoresContext))]
-    [Migration("20250105160505_Initialmigration")]
-    partial class Initialmigration
+    [Migration("20250216091752_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace BikeStore.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Brand", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Brand", b =>
                 {
                     b.Property<int>("BrandId")
                         .ValueGeneratedOnAdd()
@@ -41,6 +41,9 @@ namespace BikeStore.Persistence.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("brand_name");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Logo")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
@@ -51,7 +54,7 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("brands", "production");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Category", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Category", b =>
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
@@ -67,13 +70,16 @@ namespace BikeStore.Persistence.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("category_name");
 
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
                     b.HasKey("CategoryId")
                         .HasName("PK__categori__D54EE9B4A37881F0");
 
                     b.ToTable("categories", "production");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Customer", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Customer", b =>
                 {
                     b.Property<int>("CustomerId")
                         .ValueGeneratedOnAdd()
@@ -143,7 +149,68 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("customers", "sales");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Order", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Lookup", b =>
+                {
+                    b.Property<int>("LookupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LookupId"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LookupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LookupValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LookupId");
+
+                    b.ToTable("Lookup");
+
+                    b.HasData(
+                        new
+                        {
+                            LookupId = 1,
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5030),
+                            IsActive = true,
+                            LookupName = "Order Status",
+                            LookupValue = "Order Placed"
+                        },
+                        new
+                        {
+                            LookupId = 2,
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5070),
+                            IsActive = true,
+                            LookupName = "Order Status",
+                            LookupValue = "In Progress"
+                        },
+                        new
+                        {
+                            LookupId = 3,
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5075),
+                            IsActive = true,
+                            LookupName = "Order Status",
+                            LookupValue = "Ready for Pickup/Delivery"
+                        },
+                        new
+                        {
+                            LookupId = 4,
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5079),
+                            IsActive = true,
+                            LookupName = "Order Status",
+                            LookupValue = "Completed"
+                        });
+                });
+
+            modelBuilder.Entity("BikeStore.Domain.Models.Order", b =>
                 {
                     b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
@@ -192,7 +259,7 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("orders", "sales");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.OrderItem", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.OrderItem", b =>
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("int")
@@ -226,7 +293,7 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("order_items", "sales");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Product", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Product", b =>
                 {
                     b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -246,6 +313,9 @@ namespace BikeStore.Persistence.Migrations
                     b.Property<string>("Image")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("ListPrice")
                         .HasColumnType("decimal(10, 2)")
@@ -272,7 +342,45 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("products", "production");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Staff", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.RepairService", b =>
+                {
+                    b.Property<int>("ServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
+
+                    b.Property<int>("AssignTo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BikeNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrandName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EstimatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MobileNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RepairStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ServiceId");
+
+                    b.ToTable("RepairService");
+                });
+
+            modelBuilder.Entity("BikeStore.Domain.Models.Staff", b =>
                 {
                     b.Property<int>("StaffId")
                         .ValueGeneratedOnAdd()
@@ -337,7 +445,7 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("staffs", "sales");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Stock", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Stock", b =>
                 {
                     b.Property<int>("StoreId")
                         .HasColumnType("int")
@@ -359,7 +467,7 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("stocks", "production");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Store", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Store", b =>
                 {
                     b.Property<int>("StoreId")
                         .ValueGeneratedOnAdd()
@@ -379,6 +487,9 @@ namespace BikeStore.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)")
                         .HasColumnName("email");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(25)
@@ -630,21 +741,21 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Order", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Order", b =>
                 {
-                    b.HasOne("BikeStore.Persistence.Models.Customer", "Customer")
+                    b.HasOne("BikeStore.Domain.Models.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK__orders__customer__47DBAE45");
 
-                    b.HasOne("BikeStore.Persistence.Models.Staff", "Staff")
+                    b.HasOne("BikeStore.Domain.Models.Staff", "Staff")
                         .WithMany("Orders")
                         .HasForeignKey("StaffId")
                         .IsRequired()
                         .HasConstraintName("FK__orders__staff_id__49C3F6B7");
 
-                    b.HasOne("BikeStore.Persistence.Models.Store", "Store")
+                    b.HasOne("BikeStore.Domain.Models.Store", "Store")
                         .WithMany("Orders")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -658,16 +769,16 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.OrderItem", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.OrderItem", b =>
                 {
-                    b.HasOne("BikeStore.Persistence.Models.Order", "Order")
+                    b.HasOne("BikeStore.Domain.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__order_ite__order__4D94879B");
 
-                    b.HasOne("BikeStore.Persistence.Models.Product", "Product")
+                    b.HasOne("BikeStore.Domain.Models.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -679,16 +790,16 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Product", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Product", b =>
                 {
-                    b.HasOne("BikeStore.Persistence.Models.Brand", "Brand")
+                    b.HasOne("BikeStore.Domain.Models.Brand", "Brand")
                         .WithMany("Products")
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__products__brand___3C69FB99");
 
-                    b.HasOne("BikeStore.Persistence.Models.Category", "Category")
+                    b.HasOne("BikeStore.Domain.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -700,14 +811,14 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Staff", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Staff", b =>
                 {
-                    b.HasOne("BikeStore.Persistence.Models.Staff", "Manager")
+                    b.HasOne("BikeStore.Domain.Models.Staff", "Manager")
                         .WithMany("InverseManager")
                         .HasForeignKey("ManagerId")
                         .HasConstraintName("FK__staffs__manager___44FF419A");
 
-                    b.HasOne("BikeStore.Persistence.Models.Store", "Store")
+                    b.HasOne("BikeStore.Domain.Models.Store", "Store")
                         .WithMany("Staff")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -719,16 +830,16 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Stock", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Stock", b =>
                 {
-                    b.HasOne("BikeStore.Persistence.Models.Product", "Product")
+                    b.HasOne("BikeStore.Domain.Models.Product", "Product")
                         .WithMany("Stocks")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__stocks__product___52593CB8");
 
-                    b.HasOne("BikeStore.Persistence.Models.Store", "Store")
+                    b.HasOne("BikeStore.Domain.Models.Store", "Store")
                         .WithMany("Stocks")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -791,41 +902,41 @@ namespace BikeStore.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Brand", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Brand", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Category", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Customer", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Order", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Product", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Product", b =>
                 {
                     b.Navigation("OrderItems");
 
                     b.Navigation("Stocks");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Staff", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Staff", b =>
                 {
                     b.Navigation("InverseManager");
 
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("BikeStore.Persistence.Models.Store", b =>
+            modelBuilder.Entity("BikeStore.Domain.Models.Store", b =>
                 {
                     b.Navigation("Orders");
 

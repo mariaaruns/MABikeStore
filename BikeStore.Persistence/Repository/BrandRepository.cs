@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,7 +32,22 @@ namespace BikeStore.Persistence.Repository
             return DropdownList;
         }
 
-        public async Task<GetBrandCount> GetBrandCount()
+        public async Task<bool> DeleteBrandAsync(int BrandId)
+        {
+            //Inactive
+            var result = await _dbContext.Brands.Where(x => x.BrandId == BrandId).FirstOrDefaultAsync();
+            if (result != null)
+            {
+                result.IsActive = !result.IsActive;  
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
+        public async Task<GetBrandCount> GetBrandCountAsync()
         {
             var countData = await _dbContext.Brands
            .GroupBy(x => x.IsActive)

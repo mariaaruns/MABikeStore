@@ -1,5 +1,6 @@
 ﻿using BikeStore.Persistence.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -40,5 +41,36 @@ namespace BikeStore.Persistence.Data.SeedData
 
         }
 
-   }
+        public static async Task SeedUsers(this IServiceProvider provider) {
+            var scope = provider.CreateScope();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<BikeStoresContext>();
+            await dbContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users ON");
+            var userList = dbContext.Staffs.ToList();
+   
+            foreach (var x in userList) 
+            {
+               
+                var newUser = new ApplicationUser()
+                {
+                    Id=x.StaffId,
+                    FirstName=x.FirstName,
+                    LastName=x.LastName,
+                    Email=x.Email,
+                    PhoneNumber=x.Phone,
+                    UserName= x.Email
+                };
+                // var hasher = new PasswordHasher<ApplicationUser>();
+                //newUser.PasswordHash = hasher.HashPassword(newUser, "Admin@123");
+                var result = await userManager.CreateAsync(newUser, "Admin@123");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(newUser, "EMPLOYEE");
+                }
+            }
+            await dbContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users OFF");
+        }
+
+
+    }
 }

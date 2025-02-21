@@ -1,19 +1,19 @@
 ﻿@page "/Brand"
+@using BikeStore.UI.Contracts.Interface
 <SectionContent SectionName="page-title">
     <MudChip T="string" Icon="@Icons.Material.Filled.Menu" Size="Size.Large" Color="Color.Dark" IconColor="Color.Success">Brands</MudChip>
 </SectionContent>
 
 
 
-<MudCard>
+<MudCard Class="m-2">
     <MudTabs Elevation="2" Rounded="true" Centered="true">
-        <MudTabPanel Text="Active" BadgeData='"S"'>
-            <MudText>This is Active </MudText>
-            <BrandDataGrid Status="Active"></BrandDataGrid>
+        <MudTabPanel Text="Active" BadgeData='@ActiveBrandCount'>
+
+            <BrandDataGrid OnCountChange="getBrandCount" Status="Active"></BrandDataGrid>
         </MudTabPanel>
-        <MudTabPanel Text="Inactive" BadgeData='"..."' BadgeColor="Color.Dark" >
-            <MudText>This is In Active </MudText>
-            <BrandDataGrid Status="InActive"></BrandDataGrid>
+        <MudTabPanel Text="Inactive" BadgeData='@InactiveBrandCount'  BadgeColor="Color.Dark" >
+            <BrandDataGrid OnCountChange="getBrandCount" Status="InActive"></BrandDataGrid>
         </MudTabPanel>
         @* <MudTabPanel Text="Up Coming" BadgeData='"N"' /> *@
 
@@ -22,6 +22,36 @@
 </MudCard>
 
 @code {
+
+    [Inject]
+    private IBrandApi _brandApi { get; set; }
+
     private string storeName { get; set; }
+
+    private int  ActiveBrandCount{get;set;}=0;
+    private int  InactiveBrandCount{get;set;}=0;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            await getBrandCount();
+            StateHasChanged();
+        }
+    }
+
+    private async Task getBrandCount() 
+    { 
+        var result = await _brandApi.GetBrandCountAsync();
+        
+        if (result.Data is { })
+        {
+            ActiveBrandCount = result.Data.ActiveBrandsCount;
+            InactiveBrandCount = result.Data.InActiveBrandsCount;
+
+            StateHasChanged();
+        }
+    }
+
 }
 

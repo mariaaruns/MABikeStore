@@ -14,6 +14,7 @@ using MapsterMapper;
 using System.Reflection;
 using BikeStore.Persistence.Data.SeedData;
 using Microsoft.Extensions.FileProviders;
+using Mapster;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -100,6 +101,7 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 var serviceProvider = app.Services;
 await RolesSeed.SeedRoles(serviceProvider);
+//await RolesSeed.SeedUsers(serviceProvider);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

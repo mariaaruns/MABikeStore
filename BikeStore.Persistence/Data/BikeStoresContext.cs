@@ -36,10 +36,14 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
 
     public virtual DbSet<Lookup> Lookup { get; set; }
 
+    public virtual DbSet<RepairService> RepairService { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var hasher = new PasswordHasher<ApplicationUser>();
+
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<ApplicationUser>(entity => entity.ToTable("Users")); // Renaming AspNetUsers to Users
+        modelBuilder.Entity<ApplicationUser>(entity =>entity.ToTable("Users")); // Renaming AspNetUsers to Users
         modelBuilder.Entity<ApplicationRole>(entity => entity.ToTable("Roles")); // Renaming AspNetRoles to Roles
         modelBuilder.Entity<IdentityUserRole<int>>(entity => entity.ToTable("UserRoles")); // Renaming AspNetUserRoles to UserRoles
         modelBuilder.Entity<IdentityUserClaim<int>>(entity => entity.ToTable("UserClaims")); // Renaming AspNetUserClaims to UserClaims
@@ -47,19 +51,14 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
         modelBuilder.Entity<IdentityRoleClaim<int>>(entity => entity.ToTable("RoleClaims")); // Renaming AspNetRoleClaims to RoleClaims
         modelBuilder.Entity<IdentityUserToken<int>>(entity => entity.ToTable("UserTokens"));
 
-        /*modelBuilder.Entity<ApplicationUser>(entity =>
-        {
-            entity.HasKey(e => e.Id); // Ensure primary key is explicitly defined
-        });*/
-
         modelBuilder.Entity<Lookup>().HasData(
-        new Lookup {LookupId=1, LookupName="Order Status",LookupValue="Order Placed",CreatedDate=DateTime.Now,IsActive=true},
-        new Lookup {LookupId=2, LookupName="Order Status",LookupValue="In Progress",CreatedDate=DateTime.Now,IsActive=true},
-        new Lookup {LookupId=3, LookupName="Order Status",LookupValue="Ready for Pickup/Delivery",CreatedDate=DateTime.Now,IsActive=true},
-        new Lookup {LookupId=4, LookupName="Order Status",LookupValue="Completed",CreatedDate=DateTime.Now,IsActive=true}
-        
-        );
+        new Lookup { LookupId = 1, LookupName = "Order Status", LookupValue = "Order Placed", CreatedDate = DateTime.Now, IsActive = true },
+        new Lookup { LookupId = 2, LookupName = "Order Status", LookupValue = "In Progress", CreatedDate = DateTime.Now, IsActive = true },
+        new Lookup { LookupId = 3, LookupName = "Order Status", LookupValue = "Ready for Pickup/Delivery", CreatedDate = DateTime.Now, IsActive = true },
+        new Lookup { LookupId = 4, LookupName = "Order Status", LookupValue = "Completed", CreatedDate = DateTime.Now, IsActive = true }
 
+        );
+        
         modelBuilder.Entity<Brand>(entity =>
         {
             entity.HasKey(e => e.BrandId).HasName("PK__brands__5E5A8E27729211BE");
@@ -217,6 +216,10 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
         {
             entity.HasKey(e => e.StaffId).HasName("PK__staffs__1963DD9C5F828E70");
 
+            entity.Property(e => e.StaffId)
+            .HasColumnName("staff_id");
+          
+
             entity.ToTable("staffs", "sales");
 
             entity.HasIndex(e => e.Email, "UQ__staffs__AB6E6164F5B4BF55").IsUnique();
@@ -250,6 +253,8 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
             entity.HasOne(d => d.Store).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.StoreId)
                 .HasConstraintName("FK__staffs__store_id__440B1D61");
+
+
         });
 
         modelBuilder.Entity<Stock>(entity =>
@@ -310,6 +315,5 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
 
         OnModelCreatingPartial(modelBuilder);
     }
-
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

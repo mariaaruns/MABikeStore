@@ -9,6 +9,14 @@ namespace BikeStore.UI.Contracts.Interface
     {
         Task<ApiResponse<PaginationModel<GetBrandResponse>>> GetAllBrand(GetBrandRequest request);
 
-        Task<GetBrandCount> GetBrandCount();
+        Task<ApiResponse<GetBrandCount>> GetBrandCountAsync();
+
+        Task<ApiResponse<bool>> DeleteBrandAsync(int id);
+
+        Task<ApiResponse<GetBrandResponse>> GetBrandByIdAsync(int id);
+
+        Task<ApiResponse<GetBrandResponse>> UpdateBrandAsync(UpdateBrandRequest request);
+
+        Task<ApiResponse<GetBrandResponse>> CreateBrandAsync(CreateBrandRequest request);
     }
 }

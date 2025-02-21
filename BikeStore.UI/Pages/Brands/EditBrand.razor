@@ -1,0 +1,183 @@
+﻿@using BikeStore.Domain.DTO.Request.BrandRequest
+@using BikeStore.UI.Contracts.Interface
+
+
+<MudDialog   Class="width blur dialog-background" TitleClass="blur dialog-background-title" ContentClass="dialog-background-surface py-10" ActionsClass="dialog-background-surface">
+    <DialogContent>
+
+        <MudGrid  Justify="Justify.Center" >
+
+            <MudItem Class="d-flex align-center justify-center mud-width-full py-4" xs="12">
+                @if (!string.IsNullOrEmpty(BrandLogoPreview))
+                {
+                    <MudAvatar Size="Size.Large" Color="Color.Primary">
+                        <MudImage Src="@BrandLogoPreview" />
+                    </MudAvatar>
+                    @* <img src="@BrandLogoPreview" alt="Selected Image" style="max-width: 100px; max-height: 100px; border: 1px solid #ccc;" /> *@
+                }
+                else
+                {
+                    <MudAvatar Size="Size.Large" Color="Color.Primary">
+
+                        <MudImage src="~/uploads/images/logo-com-hr-logo-5636a4d2d5-seeklogo.com.png" />
+                    </MudAvatar>
+                    @* <img src="" alt="Preview Image" style="width: 100px; height: 100px; background-color:darkgrey;   border: 10px solid #ccc;" /> *@
+                }
+            </MudItem>
+
+            <MudItem>
+                @if (_files.Count > 0)
+                {
+                    <MudFab Color="Color.Secondary" Size="Size.Small" OnClick="ClearAttachments" StartIcon="@Icons.Material.Filled.RemoveFromQueue" />
+                }
+                else
+                {
+                    <MudFileUpload T="IBrowserFile" Class="ms-1" FilesChanged="UploadFiles">
+                        <ActivatorContent>
+                            <MudFab Color="Color.Success" Size="Size.Small" StartIcon="@Icons.Material.Filled.AttachFile" />
+                        </ActivatorContent>
+                    </MudFileUpload>
+                }
+
+            </MudItem>
+
+            <MudItem xs="12" >
+                <MudTextField @bind-Value="BrandName" Label="Brand Name" Variant="Variant.Filled"></MudTextField>
+            </MudItem>
+
+        </MudGrid>
+
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SubmitAsync">Update</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+
+    .mud-avatar.mud-avatar-large {
+    width: 150px;
+    height: 150px;
+    font-size: 1.5rem;
+    }
+</style>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnUpdated { get; set; }
+
+    [Parameter]
+    public int BrandId { get; set; }
+
+
+
+    public string BrandName { get; set; }
+    public string BrandLogoPreview { get; set; }
+    public UpdateBrandRequest request = new();
+
+    [Inject]
+    public IBrandApi _brandApi { get; set; }
+
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (BrandId != 0)
+        {
+            await GetBrandDetails(BrandId);
+        }
+        StateHasChanged();
+    }
+
+    protected async Task GetBrandDetails(int id)
+    {
+        var brand = await _brandApi.GetBrandByIdAsync(id);
+        if (brand.StatusCode == System.Net.HttpStatusCode.OK && brand.Data != null)
+        {
+            BrandName = brand.Data.BrandName;
+            BrandLogoPreview = brand.Data.Logo;
+        }
+    }
+
+    private async Task SubmitAsync() 
+    {
+        bool isSuccessfullyUpsert = false;
+        
+        if (BrandId != 0) 
+        { 
+            var request = new UpdateBrandRequest
+                {
+                    BrandId = BrandId,
+                    BrandName = BrandName,
+                    Logo = ""
+                };
+            isSuccessfullyUpsert = await UpdateBrand(request);
+        }
+        else
+        {
+            var request = new CreateBrandRequest
+            {        
+                    BrandName = BrandName,
+                    Logo = ""
+            };
+            
+            isSuccessfullyUpsert = await CreateBrand(request);
+        }
+      
+        if (OnUpdated.HasDelegate && isSuccessfullyUpsert)
+        {
+            OnUpdated.InvokeAsync(isSuccessfullyUpsert);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+
+       
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public void ClearAttachments() {
+        _files.Clear();
+        BrandLogoPreview = string.Empty;
+    }
+
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        ClearAttachments();
+        _files.Add(file);
+        if (file != null)
+        {
+            using var stream = file.OpenReadStream();
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+            BrandLogoPreview = $"data:{file.ContentType};base64,{base64String}";
+        }
+    }
+
+    private async Task<bool> UpdateBrand(UpdateBrandRequest request)
+    {
+        var result= await _brandApi.UpdateBrandAsync(request);
+        if (result.StatusCode == System.Net.HttpStatusCode.OK) 
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private async Task<bool> CreateBrand(CreateBrandRequest request)
+    {
+        var result = await _brandApi.CreateBrandAsync(request);
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return true;
+        }
+        return false;
+    }
+
+}

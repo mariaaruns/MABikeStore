@@ -22,7 +22,7 @@ namespace BikeStore.Application.CQRS.Queries.BrandQueries
         }
         public async Task<GetBrandCount> Handle(GetBrandCountQuery request, CancellationToken cancellationToken)
         {
-            var GetCount = await _unitOfWork.BrandRepository.GetBrandCount();
+            var GetCount = await _unitOfWork.BrandRepository.GetBrandCountAsync();
             if (GetCount != null)
             {
                 return GetCount;

@@ -28,7 +28,7 @@
 
 <MudLayout>
     <MudAppBar  >
-          <MudIconButton Icon="@Icons.Material.Filled.ViewSidebar" Color="Color.Inherit"  Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" /> 
+        <MudIconButton Icon="@Icons.Material.Filled.ViewSidebar" Color="Color.Inherit"  Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" /> 
         <BikeStore.UI.Components.StoreDropdown />
         <MudSpacer />
         <SectionOutlet SectionName="page-title">
@@ -54,26 +54,19 @@
     bool _drawerOpen = !true;
     private string userName { get; set; } = string.Empty;
     private MudDrawer mudDrawer;
-    // public void OnOpen() {
-    //     _drawerOpen = !_drawerOpen;
-    //     if (_drawerOpen == true)
-    //     {
-    //         userName = "Maria Arun";
-    //     }
-    //     else { 
-    //         userName = "";
-    //     }
-    // }
-
 
     public void  DrawerToggle()
     {
-
+        if (mudDrawer.Breakpoint == Breakpoint.Xs)
+        {
+            mudDrawer.Variant = DrawerVariant.Temporary;
+        }
         _drawerOpen = !_drawerOpen;
        
         if (_drawerOpen == true)
         {
             userName = "Maria Arun";
+            
         }
         else
         {

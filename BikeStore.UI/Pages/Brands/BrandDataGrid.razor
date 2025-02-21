@@ -3,110 +3,148 @@
 @using BikeStore.Domain.DTO
 @using BikeStore.Domain.DTO.Request.BrandRequest
 @using BikeStore.Domain.DTO.Response.BrandResponse
+@using BikeStore.UI.Components
 @using BikeStore.UI.Contracts.Interface
+@inject IDialogService DialogService
 
+<MudTable FixedHeader="true" Height="300px" FixedFooter="true" ServerData="ServerReload" Dense="true" Loading="@(!isOkResponse)" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudButton Color="Color.Primary" onclick="@(()=>OpenEditDialog(0))" ButtonType="ButtonType.Button" IconColor="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add">Add Brand</MudButton>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+        AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        @*  <MudTh><MudTableSortLabel SortLabel="nr_field" T="GetBrandResponse"><b>Id</b></MudTableSortLabel></MudTh> *@
+        <MudTh><MudTableSortLabel SortLabel="sign_field" T="GetBrandResponse"><b>Name</b></MudTableSortLabel></MudTh>
+        <MudTh><b>Action</b></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        @*  <MudTd DataLabel="Id">@context.BrandId</MudTd> *@
+        <MudTd DataLabel="Name">@context.BrandName</MudTd>
+        <MudTd DataLabel="Action">
+            <MudButtonGroup Color="Color.Transparent" Variant="Variant.Filled">
+                @if (Status == "Active")
+                {
+                    <MudIconButton Color="Color.Secondary" onclick="@(()=>OpenEditDialog(context.BrandId))" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                }
+                <MudIconButton Color="Color.Error" onclick="@(()=>DeleteAlert(context.BrandId))" Icon="@(Status == "Active" ?Icons.Material.Filled.Delete :Icons.Material.Filled.RestoreFromTrash)"></MudIconButton>
+            </MudButtonGroup>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager  />
+    </PagerContent>
+</MudTable>
 
-    <MudTable ServerData="ServerReload" Dense="true" Loading="@(!isOkResponse)" Hover="true" @ref="table">
-        <ToolBarContent>
-            <MudSpacer />
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
-            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh><MudTableSortLabel SortLabel="nr_field" T="GetBrandResponse">Id</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="sign_field" T="GetBrandResponse">Name</MudTableSortLabel></MudTh>
-            <MudTh>Action</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Id">@context.BrandId</MudTd>
-            <MudTd DataLabel="Name">@context.BrandName</MudTd>
-            <MudTd DataLabel="Action">
-                    <MudFab StartIcon="@Icons.Material.Filled.Edit" Color="Color.Secondary" onclick="@(()=>Edit(context.BrandId))" Size="Size.Small" />
-                    <MudFab StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" onclick="@(()=>Delete(context.BrandId))" Size="Size.Small" />
-            </MudTd>
-        </RowTemplate>
-        <NoRecordsContent>
-            <MudText>No matching records found</MudText>
-        </NoRecordsContent>
-        <LoadingContent>
-            <MudText>Loading...</MudText>
-        </LoadingContent>
-        <PagerContent>
-            <MudTablePager />
-        </PagerContent>
-    </MudTable>
 @code {
     [Parameter]
     public string Status { get; set; }
 
+    [Parameter]
+    public EventCallback OnCountChange { get; set; }
+
     public bool isOkResponse { get; set; } = false;
     private string searchString = null;
+
+    public PaginationModel<GetBrandResponse> data;
 
     //private IEnumerable<GetBrandResponse> pagedData;
     private MudTable<GetBrandResponse> table;
 
     private async Task<TableData<GetBrandResponse>> ServerReload(TableState state, CancellationToken token)
     {
-        // Forward the provided token to methods which support it
         var BrandRequest = new GetBrandRequest
-        {
-                BrandFilter=searchString,
-                PageNumber = state.Page == 0 ? 1: state.Page,
+            {
+                BrandFilter = searchString,
+                PageNumber = state.Page == 0 ? 1 : state.Page,
                 PageSize = state.PageSize,
-                IsActive = Status=="Active"
-
-        };
-        var data = await GetAllBrand(BrandRequest);
-        // Simulate a long-running operation
+                IsActive = Status == "Active"
+            };
+        data = await GetAllBrand(BrandRequest);
         await Task.Delay(300, token);
-        // Get the total count
         var totalItems = data.TotalNoOfRecords;
-        // Get the paged data
-
-        // Return the data
         return new TableData<GetBrandResponse>() { TotalItems = totalItems, Items = data.Items };
     }
 
     [Inject]
     public IBrandApi _brandApi { get; set; }
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     //await table.ReloadServerData();
-
-    // }
     private void OnSearch(string text)
     {
         searchString = text;
         table.ReloadServerData();
     }
 
-    protected async Task<PaginationModel<GetBrandResponse>> GetAllBrand(GetBrandRequest request) 
+    protected async Task<PaginationModel<GetBrandResponse>> GetAllBrand(GetBrandRequest request)
     {
         isOkResponse = false;
 
-        var result= await _brandApi.GetAllBrand(request);
+        var result = await _brandApi.GetAllBrand(request);
 
         if (result.StatusCode == System.Net.HttpStatusCode.OK)
         {
             isOkResponse = true;
             return result.Data;
         }
-        else 
-        { 
+        else
+        {
             isOkResponse = false;
             return null;
         }
     }
 
-
-    protected void  Edit(int id) { 
-    
-    }
-    
-    protected void Delete(int id)
+    protected Task OpenEditDialog(int id)
     {
-
+        var parameters = new DialogParameters<EditBrand>
+        {
+            { "BrandId",id},
+            {"OnUpdated",EventCallback.Factory.Create<bool>(this,ReloadTable) }
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+        return DialogService.ShowAsync<EditBrand>("Edit brand", parameters, options);
     }
 
+    protected Task DeleteAlert(int id)
+    {
+        var parameters = new DialogParameters<DeleteDialog>
+        {
+            { x => x.ContentText,  $"Do you really want to {(Status == "Active" ? "Inactive" : "Active")} these records?"},
+            { x => x.ButtonText, $"{(Status == "Active" ? "Inactive" : "Restore")}"},
+            { x => x.Color, Color.Error },
+            { x => x.id, id },
+            { "OnDelete", EventCallback.Factory.Create<int>(this, ConfirmDelete) }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        return DialogService.ShowAsync<DeleteDialog>("Active/Inactive Confirmation", parameters, options);
+    }
+
+    private async Task ReloadTable(bool isSuccess) {
+        if (isSuccess)
+            table.ReloadServerData();
+    }
+    private async Task ConfirmDelete(int id)
+    {
+        if (id != 0)
+        {
+
+            var result = await _brandApi.DeleteBrandAsync(id);
+            if (result.Data)
+            {
+                var RemoveData = data.Items.FirstOrDefault(x => x.BrandId == id);
+                data.Items.Remove(RemoveData);
+                StateHasChanged();
+                await OnCountChange.InvokeAsync();
+            }
+        }
+
+    }
 }

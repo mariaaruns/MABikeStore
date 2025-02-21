@@ -45,7 +45,7 @@ namespace BikeStore.Application.CQRS.Commands.BrandCommand
         public CreateBrandValidator()
         {
             RuleFor(x => x.request.BrandName).NotEmpty();
-            RuleFor(x => x.request.Logo).NotEmpty();
+            //RuleFor(x => x.request.Logo).NotEmpty();
         }
     
     }

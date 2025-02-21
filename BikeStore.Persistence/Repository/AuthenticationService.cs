@@ -128,7 +128,8 @@ namespace BikeStore.Persistence.Repository
             _applicationUser.FirstName = request.FirstName;
             _applicationUser.LastName = request.LastName;
             _applicationUser.Avatar = request.Avatar;
-
+           // _applicationUser.Id = 1;
+                
             var result = await _userManager.CreateAsync(_applicationUser, request.Password);
 
             if (result.Succeeded)

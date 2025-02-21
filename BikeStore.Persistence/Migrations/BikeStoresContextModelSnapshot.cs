@@ -67,6 +67,9 @@ namespace BikeStore.Persistence.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("category_name");
 
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
                     b.HasKey("CategoryId")
                         .HasName("PK__categori__D54EE9B4A37881F0");
 
@@ -173,7 +176,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 1,
-                            CreatedDate = new DateTime(2025, 2, 9, 20, 20, 0, 842, DateTimeKind.Local).AddTicks(6234),
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5030),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Order Placed"
@@ -181,7 +184,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 2,
-                            CreatedDate = new DateTime(2025, 2, 9, 20, 20, 0, 842, DateTimeKind.Local).AddTicks(6283),
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5070),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "In Progress"
@@ -189,7 +192,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 3,
-                            CreatedDate = new DateTime(2025, 2, 9, 20, 20, 0, 842, DateTimeKind.Local).AddTicks(6287),
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5075),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Ready for Pickup/Delivery"
@@ -197,7 +200,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 4,
-                            CreatedDate = new DateTime(2025, 2, 9, 20, 20, 0, 842, DateTimeKind.Local).AddTicks(6291),
+                            CreatedDate = new DateTime(2025, 2, 16, 14, 47, 51, 267, DateTimeKind.Local).AddTicks(5079),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Completed"
@@ -308,6 +311,9 @@ namespace BikeStore.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("ListPrice")
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("list_price");
@@ -331,6 +337,44 @@ namespace BikeStore.Persistence.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("products", "production");
+                });
+
+            modelBuilder.Entity("BikeStore.Domain.Models.RepairService", b =>
+                {
+                    b.Property<int>("ServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
+
+                    b.Property<int>("AssignTo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BikeNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrandName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EstimatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MobileNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RepairStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ServiceId");
+
+                    b.ToTable("RepairService");
                 });
 
             modelBuilder.Entity("BikeStore.Domain.Models.Staff", b =>
@@ -440,6 +484,9 @@ namespace BikeStore.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)")
                         .HasColumnName("email");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(25)
