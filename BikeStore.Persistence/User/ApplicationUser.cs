@@ -17,7 +17,7 @@ namespace BikeStore.Persistence.User
         public string Avatar { get; set; }
 
         public virtual Staff Staff { get; set; }
-        public virtual RepairService RepairService {get;set;}
+        public virtual ICollection<RepairService> RepairService {get;set;}
         public virtual ICollection<IdentityUserRole<int>> UserRoles { get; set; }
         public virtual ICollection<IdentityUserClaim<string>> Claims { get; set; }
     }

@@ -48,8 +48,15 @@ namespace BikeStore.Application.CQRS.Queries.LookupQueries
                     }).ToList();
                 break;
 
+
                 default:
-                    return default;
+                    var lookUpResult = await _unitOfWork.LookupRepository.GetLookUpData(request.type);
+                    
+                    return lookUpResult.Select(x => new GetDropdownResponse
+                    {
+                        Text=x.LookupValue,
+                        Value=x.LookupId
+                    }).ToList();
 
             }
 

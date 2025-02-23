@@ -14,6 +14,7 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
 
     public BikeStoresContext(DbContextOptions<BikeStoresContext> options) : base(options)
     {
+
     }
 
     public virtual DbSet<Brand> Brands { get; set; }
@@ -44,9 +45,9 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
 
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<ApplicationUser>(entity =>entity.ToTable("Users"));
-        modelBuilder.Entity<ApplicationRole>(entity => entity.ToTable("Roles")); 
-        modelBuilder.Entity<IdentityUserRole<int>>(entity => entity.ToTable("UserRoles")); 
+        modelBuilder.Entity<ApplicationUser>(entity => entity.ToTable("Users"));
+        modelBuilder.Entity<ApplicationRole>(entity => entity.ToTable("Roles"));
+        modelBuilder.Entity<IdentityUserRole<int>>(entity => entity.ToTable("UserRoles"));
         modelBuilder.Entity<IdentityUserClaim<int>>(entity => entity.ToTable("UserClaims"));
         modelBuilder.Entity<IdentityUserLogin<int>>(entity => entity.ToTable("UserLogins"));
         modelBuilder.Entity<IdentityRoleClaim<int>>(entity => entity.ToTable("RoleClaims"));
@@ -55,11 +56,17 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
         modelBuilder.Entity<RepairService>(entity =>
         {
             entity.HasOne<ApplicationUser>()
-           .WithOne(u => u.RepairService)
-           .HasForeignKey<RepairService>(s => s.AssignTo)
-           .OnDelete(DeleteBehavior.Cascade);
+           .WithMany(u => u.RepairService)
+           .HasForeignKey(s => s.AssignTo)
+           .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(rs => rs.Store)
+           .WithMany(s => s.RepairServices)
+           .HasForeignKey(rs => rs.StoreId)
+           .OnDelete(DeleteBehavior.NoAction);
+
         });
-        
+
         modelBuilder.Entity<Lookup>().HasData(
         new Lookup { LookupId = 1, LookupName = "Order Status", LookupValue = "Order Placed", CreatedDate = DateTime.Now, IsActive = true },
         new Lookup { LookupId = 2, LookupName = "Order Status", LookupValue = "In Progress", CreatedDate = DateTime.Now, IsActive = true },
@@ -67,7 +74,7 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
         new Lookup { LookupId = 4, LookupName = "Order Status", LookupValue = "Completed", CreatedDate = DateTime.Now, IsActive = true }
 
         );
-        
+
         modelBuilder.Entity<Brand>(entity =>
         {
             entity.HasKey(e => e.BrandId).HasName("PK__brands__5E5A8E27729211BE");
@@ -224,7 +231,7 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
         modelBuilder.Entity<Staff>(entity =>
         {
             entity.HasKey(e => e.StaffId).HasName("PK__staffs__1963DD9C5F828E70");
-           // entity.Property(e => e.StaffId).ValueGeneratedNever();
+            // entity.Property(e => e.StaffId).ValueGeneratedNever();
             entity.Property(e => e.StaffId)
             .HasColumnName("staff_id");
             entity.ToTable("staffs", "sales");
@@ -260,10 +267,10 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
                 .HasForeignKey(d => d.StoreId)
                 .HasConstraintName("FK__staffs__store_id__440B1D61");
 
-             entity.HasOne<ApplicationUser>()
-             .WithOne(u => u.Staff)
-             .HasForeignKey<Staff>(s => s.StaffId)
-             .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<ApplicationUser>()
+            .WithOne(u => u.Staff)
+            .HasForeignKey<Staff>(s => s.StaffId)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
         });
@@ -322,6 +329,52 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
                 .HasMaxLength(5)
                 .IsUnicode(false)
                 .HasColumnName("zip_code");
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+
+            entity.ToTable("Payment", "sales");
+            entity.HasKey(e => e.PaymentId);
+
+            entity.Property(e => e.PaymentMethod)
+              .HasMaxLength(255)
+              .IsUnicode(false)
+              .HasColumnName("PaymentMethod");
+
+            entity.Property(e => e.PaymentStatus)
+              .HasMaxLength(255)
+              .IsUnicode(false)
+              .HasColumnName("PaymentStatus");
+
+            entity.Property(e => e.PaymentDate)
+            .HasColumnName("PaymentDate");
+
+            entity.Property(e => e.UpiPayerVpa)
+            .HasMaxLength(255)
+            .IsUnicode(false)
+            .HasColumnName("UpiPayerVpa");
+
+            entity.Property(e => e.UpiTransactionId)
+           .HasMaxLength(255)
+           .IsUnicode(false)
+           .HasColumnName("UpiTransactionId");
+
+
+            entity.Property(e => e.PaymentStatus)
+           .HasMaxLength(255)
+           .IsUnicode(false)
+           .HasColumnName("PaymentStatus");
+
+            entity.Property(e => e.OrderId)
+           .HasColumnName("OrderId");
+
+            entity.HasOne(x => x.Order)
+            .WithOne(x => x.Payment)
+            .HasForeignKey<Payment>(p => p.OrderId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
         });
 
         OnModelCreatingPartial(modelBuilder);

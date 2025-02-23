@@ -22,6 +22,12 @@ namespace BikeStore.Persistence.Repository
 
         public IProductRepository ProductRepository { get; private set; }
 
+        public ILookupRepository LookupRepository  {get; private set; }
+
+        public IStockRepository stockRepository  {get; private set; }
+
+        public IRepairServiceRepository repairServiceRepository { get; private set; }
+
         private readonly BikeStoresContext _dbContext;
 
         public UnitOfWork(BikeStoresContext dbcontext) 
@@ -31,6 +37,10 @@ namespace BikeStore.Persistence.Repository
             StoreRepository = new StoreRepository(_dbContext);
             CategoryRepository = new CategoryRepository(_dbContext);
             ProductRepository = new ProductRepository(_dbContext);
+            LookupRepository = new LookupRepository(_dbContext);
+            repairServiceRepository = new RepairServiceRepository(_dbContext);
+            stockRepository = new StockRepository(_dbContext);
+
         }
         public void Dispose()
         {

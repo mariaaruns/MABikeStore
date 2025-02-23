@@ -24,6 +24,8 @@ public partial class Store
 
     public bool? IsActive { get; set; }
 
+    public virtual ICollection<RepairService> RepairServices { get; set; } = new List<RepairService>();
+
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();

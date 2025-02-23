@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace BikeStore.Domain.Contracts.IRepository
 {
-    public interface IRepairServiceRepository:IGenericRepository<RepairService>
+    public interface ILookupRepository:IGenericRepository<Lookup>
     {
-        Task TrackRepairStatus();
-
+        Task<IQueryable<Lookup>> GetLookUpData(string LookupName);
     }
 }

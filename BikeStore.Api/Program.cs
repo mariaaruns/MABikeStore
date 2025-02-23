@@ -118,8 +118,8 @@ builder.Services.AddSwaggerGen(options =>
 
 
 var app = builder.Build();
-var serviceProvider = app.Services;
-await RolesSeed.SeedRoles(serviceProvider);
+//var serviceProvider = app.Services;
+//await RolesSeed.SeedRoles(serviceProvider);
 //await RolesSeed.SeedUsers(serviceProvider);
 
 // Configure the HTTP request pipeline.

@@ -14,7 +14,9 @@ namespace BikeStore.Domain.Contracts
         IStoreRepository StoreRepository { get; }
         IProductRepository ProductRepository { get; }
         ICategoryRepository CategoryRepository { get; }
-
+        ILookupRepository LookupRepository { get; }
+        IStockRepository stockRepository { get; }
+        IRepairServiceRepository repairServiceRepository { get; }
         Task<bool> SaveAsync();
     }
 

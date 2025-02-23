@@ -15,5 +15,10 @@ namespace BikeStore.Persistence.Repository
         {
 
         }
+
+        public Task TrackRepairStatus()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

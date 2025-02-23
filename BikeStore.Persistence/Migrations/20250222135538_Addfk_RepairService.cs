@@ -45,25 +45,25 @@ namespace BikeStore.Persistence.Migrations
                 column: "AssignTo",
                 unique: true);
 
-            migrationBuilder.AddForeignKey(
+          /*  migrationBuilder.AddForeignKey(
                 name: "FK_RepairService_Users_AssignTo",
                 table: "RepairService",
                 column: "AssignTo",
                 principalTable: "Users",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade);*/
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
+           /* migrationBuilder.DropForeignKey(
                 name: "FK_RepairService_Users_AssignTo",
                 table: "RepairService");
 
             migrationBuilder.DropIndex(
                 name: "IX_RepairService_AssignTo",
-                table: "RepairService");
+                table: "RepairService");*/
 
             migrationBuilder.UpdateData(
                 table: "Lookup",
