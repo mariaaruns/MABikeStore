@@ -33,7 +33,8 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+    .AddJwtBearer(options =>
 {
 
     options.RequireHttpsMetadata = false;
@@ -50,7 +51,25 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("AdminRoles", policy =>
+        policy.RequireRole("STOREADMIN", "SUPERADMIN"));
+    
+        options.AddPolicy("AdminStaff", policy =>
+        policy.RequireRole("STOREADMIN", "SUPERADMIN", "EMPLOYEE"));
+
+        options.AddPolicy("CanEdit", policy =>
+        policy.RequireClaim("Permission", "CanEdit"));
+
+        options.AddPolicy("CanDelete", policy =>
+        policy.RequireClaim("Permission", "CanDelete"));
+
+        options.AddPolicy("CanView", policy =>
+        policy.RequireClaim("Permission", "CanView"));
+
+    });
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -123,7 +142,7 @@ app.UseAuthorization();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Assets")),
-    RequestPath = "/Assets" 
+    RequestPath = "/Assets"
 });
 
 app.MapControllers();

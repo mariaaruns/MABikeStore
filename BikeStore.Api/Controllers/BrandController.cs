@@ -10,6 +10,7 @@ using BikeStore.Domain.DTO.Response.BrandResponse;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Net;
 
 namespace BikeStore.Api.Controllers
@@ -19,10 +20,12 @@ namespace BikeStore.Api.Controllers
     public class BrandController : ControllerBase
     {
         private IMediator _mediator;
-        
-        public BrandController(IMediator mediator)
+        private readonly IWebHostEnvironment _environment;
+
+        public BrandController(IMediator mediator,IWebHostEnvironment environment)
         {
             _mediator = mediator;
+            this._environment = environment;
         }
 
 
@@ -75,9 +78,10 @@ namespace BikeStore.Api.Controllers
         }
         
         [HttpPost("CreateBrand")]
-        public async Task<IActionResult> AddNewBrand([FromBody] CreateBrandRequest request) 
+        public async Task<IActionResult> AddNewBrand([FromForm] CreateBrandRequest request) 
         {
-            var result = await _mediator.Send(new CreateBrandcommand(request));
+            var uploadsFolderPath = Path.Combine(_environment.ContentRootPath, "Assets", "Uploads", "Brands");
+            var result = await _mediator.Send(new CreateBrandcommand(request,uploadsFolderPath));
             if (result != null)
             {
                 return Ok(ApiResponse<CreateBrandResponse>.Success(message: AppConstant.CREATED_SUCCESS, HttpStatusCode.OK, result));
@@ -89,9 +93,10 @@ namespace BikeStore.Api.Controllers
         }
 
         [HttpPut("updatebrand")]
-        public async Task<IActionResult> UpdateExistingBrand([FromBody] UpdateBrandRequest request)
+        public async Task<IActionResult> UpdateExistingBrand([FromForm] UpdateBrandRequest request)
         {
-            var result = await _mediator.Send(new UpdateBrandCommand(request));
+            var uploadsFolderPath = Path.Combine(_environment.ContentRootPath, "Assets", "Uploads", "Brands");
+            var result = await _mediator.Send(new UpdateBrandCommand(request, uploadsFolderPath));
             if (result is null)
             {
                 return Ok(ApiResponse<CreateBrandResponse>.Error(message: AppConstant.UPDATE_FAILED, HttpStatusCode.BadRequest));

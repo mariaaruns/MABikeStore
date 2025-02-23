@@ -14,7 +14,7 @@ namespace BikeStore.Domain.Models
         public string CustomerName { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? EstimatedDate { get; set; }
-        HashSet<string> Issues { get; set; }
+        public string?  Issues { get; set; }
         public int AssignTo { get; set; }
         public string? BikeNo { get; set; }
         public string? BrandName { get; set; }

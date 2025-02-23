@@ -4,6 +4,7 @@ using BikeStore.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BikeStore.Persistence.Migrations
 {
     [DbContext(typeof(BikeStoresContext))]
-    partial class BikeStoresContextModelSnapshot : ModelSnapshot
+    [Migration("20250222124012_AddForiegnkeystaff_UserTable")]
+    partial class AddForiegnkeystaff_UserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,7 +179,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 1,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9350),
+                            CreatedDate = new DateTime(2025, 2, 22, 18, 10, 10, 305, DateTimeKind.Local).AddTicks(9079),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Order Placed"
@@ -184,7 +187,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 2,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9386),
+                            CreatedDate = new DateTime(2025, 2, 22, 18, 10, 10, 305, DateTimeKind.Local).AddTicks(9133),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "In Progress"
@@ -192,7 +195,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 3,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9390),
+                            CreatedDate = new DateTime(2025, 2, 22, 18, 10, 10, 305, DateTimeKind.Local).AddTicks(9137),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Ready for Pickup/Delivery"
@@ -200,7 +203,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 4,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9393),
+                            CreatedDate = new DateTime(2025, 2, 22, 18, 10, 10, 305, DateTimeKind.Local).AddTicks(9141),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Completed"
@@ -366,9 +369,6 @@ namespace BikeStore.Persistence.Migrations
                     b.Property<DateTime?>("FromDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Issues")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("MobileNo")
                         .HasColumnType("nvarchar(max)");
 
@@ -376,9 +376,6 @@ namespace BikeStore.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ServiceId");
-
-                    b.HasIndex("AssignTo")
-                        .IsUnique();
 
                     b.ToTable("RepairService");
                 });
@@ -811,15 +808,6 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("BikeStore.Domain.Models.RepairService", b =>
-                {
-                    b.HasOne("BikeStore.Persistence.User.ApplicationUser", null)
-                        .WithOne("RepairService")
-                        .HasForeignKey("BikeStore.Domain.Models.RepairService", "AssignTo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BikeStore.Domain.Models.Staff", b =>
                 {
                     b.HasOne("BikeStore.Domain.Models.Staff", "Manager")
@@ -962,9 +950,6 @@ namespace BikeStore.Persistence.Migrations
 
             modelBuilder.Entity("BikeStore.Persistence.User.ApplicationUser", b =>
                 {
-                    b.Navigation("RepairService")
-                        .IsRequired();
-
                     b.Navigation("Staff")
                         .IsRequired();
                 });

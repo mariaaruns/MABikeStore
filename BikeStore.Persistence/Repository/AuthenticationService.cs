@@ -1,16 +1,22 @@
 ﻿using Azure.Core;
+
 using BikeStore.Domain.Contracts.IRepository;
 using BikeStore.Domain.DTO.Request.UserRequest;
 using BikeStore.Domain.DTO.Response.UserResponse;
+using BikeStore.Persistence.Data;
 using BikeStore.Persistence.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
@@ -22,15 +28,133 @@ namespace BikeStore.Persistence.Repository
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly BikeStoresContext _dbContext;
         private readonly IConfiguration _config;
         private ApplicationUser _applicationUser;
         public AuthenticationService(SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager,IConfiguration config)
+            UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+        BikeStoresContext dbContext,IConfiguration config)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
+            this._dbContext = dbContext;
             _config = config;
             _applicationUser = new ApplicationUser();
+        }
+
+        public async Task<AddRoleClaimResponse> AddRoleClaimAsync(AddRoleClaimRequest request)
+        {
+            var result = new AddRoleClaimResponse();
+            result.IsSuccess = false;
+            result.ErrorDesc = "Invalid role name";
+            var role = await _roleManager.FindByNameAsync(request.RoleName);
+
+            if (role != null)
+            {
+
+                var addRoleClaims = await _roleManager.AddClaimAsync(role, new Claim(request.ClaimType, request.ClaimValue));
+                if (addRoleClaims.Succeeded)
+                {
+                    result.IsSuccess = true;
+                }
+                else if(addRoleClaims.Errors!=null)
+                {
+                    result.ErrorDesc = string.Join(",",addRoleClaims.Errors.Select(x => x.Description).ToArray());
+                }
+               
+            }
+            return result;
+
+        }
+
+        public async Task<ChangeUserRoleResponse> ChangeUserRoleAsync(ChangeUserRoleRequest request)
+        {
+            var result = new ChangeUserRoleResponse();
+            result.IsSuccess = false;
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+
+            if (user != null)
+            {
+                // Remove from old role
+                var removeResult = await _userManager.RemoveFromRoleAsync(user, request.OldUserRole);
+
+                if (removeResult.Succeeded)
+                {
+                    var addResult = await _userManager.AddToRoleAsync(user, request.NewUserRole);
+
+                    if (addResult.Succeeded)
+                    {
+                        result.IsSuccess = true;
+                    }
+                    else
+                    {
+                        result.ErrorDesc = string.Join(',', addResult.Errors.Select(x => x.Description).ToArray());
+                    }
+                }
+
+            }
+            else {
+                result.ErrorDesc = "Invalid User";
+            }
+            return result;
+        }
+
+        public async Task<AddRoleClaimResponse> DeleteRoleClaimAsync(AddRoleClaimRequest request)
+        {
+            var result = new AddRoleClaimResponse();
+            result.IsSuccess = false;
+            var role = await _roleManager.FindByNameAsync(request.RoleName);
+
+            if (role != null)
+            {
+                var RemoveClaims = await _roleManager.RemoveClaimAsync(role, new Claim(request.ClaimType, request.ClaimValue));
+
+                if (RemoveClaims.Succeeded)
+                {
+                    result.IsSuccess = false;
+                }
+                else if (RemoveClaims.Errors != null)
+                {
+                    result.ErrorDesc = string.Join(",", RemoveClaims.Errors.Select(x => x.Description).ToArray());
+                }
+
+            }
+
+            return result;
+        }
+
+        public async Task<EditRoleClaimResponse> EditRoleClaimAsync(EditRoleClaimRequest request)
+        {
+            var result = new EditRoleClaimResponse();
+            result.IsSuccess = false;
+            var role = await _roleManager.FindByNameAsync(request.RoleName);
+
+            if (role != null)
+            {
+                var RemoveClaims = await _roleManager.RemoveClaimAsync(role, new Claim(request.OldClaimType, request.OldClaimValue));
+
+                if (RemoveClaims.Succeeded)
+                {
+                    var addRoleClaims = await _roleManager.AddClaimAsync(role, new Claim(request.ClaimType, request.ClaimValue));
+                   
+                    if (addRoleClaims.Succeeded)
+                    {
+                        result.IsSuccess = true;
+                    }
+                    else if (addRoleClaims.Errors != null)
+                    {
+                        result.ErrorDesc = string.Join(",", addRoleClaims.Errors.Select(x => x.Description).ToArray());
+                    }
+                }
+                else {
+
+                    result.ErrorDesc = string.Join(",", RemoveClaims.Errors.Select(x => x.Description).ToArray());
+                }
+
+            }
+            return result;
         }
 
         public async  Task<dynamic> GenerateJWtTokenAsync()
@@ -63,6 +187,31 @@ namespace BikeStore.Persistence.Repository
 
         }
 
+        public async Task<IQueryable<GetUserResponse>> GetAllUser(GetUserRequest request)
+        {
+            var result = _dbContext.Users.Join(_dbContext.UserRoles,
+                user => user.Id, userRole => userRole.UserId, (user, userRole) => new { user, userRole })
+                .Join(_dbContext.Roles, combined => combined.userRole.RoleId, role => role.Id, (combined, role) => new { combined.user, role })
+                 .Where(x =>
+                 (string.IsNullOrEmpty(request.FirstName) || x.user.FirstName.Contains( request.FirstName))
+                 && (string.IsNullOrEmpty(request.LastName) || x.user.LastName.Contains( request.LastName))
+                 && (string.IsNullOrEmpty(request.UserName) || x.user.UserName.Contains( request.UserName))
+                 && (string.IsNullOrEmpty(request.UserRole) || x.role.Name == request.UserRole))
+                .Select(result => new GetUserResponse
+                {
+                    Id = result.user.Id,
+                    FirstName = result.user.FirstName,
+                    LastName = result.user.LastName,
+                    Username = result.user.UserName,
+                    UserRole = result.role.Name,
+                    Avatar=result.user.Avatar,
+                    Email=result.user.Email,
+                    Phone=result.user.PhoneNumber
+                });
+            await Task.CompletedTask;
+            return result;
+ 
+        }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
@@ -119,7 +268,6 @@ namespace BikeStore.Persistence.Repository
             await _signInManager.SignOutAsync();
         }
 
-
         public async Task<RegisterResponse> RegisterAsync(UserRegisterRequest request)
         {
             RegisterResponse response = new RegisterResponse();
@@ -128,13 +276,16 @@ namespace BikeStore.Persistence.Repository
             _applicationUser.FirstName = request.FirstName;
             _applicationUser.LastName = request.LastName;
             _applicationUser.Avatar = request.Avatar;
+
+            var UserRole = !string.IsNullOrEmpty(request.UserRole) ? request.UserRole : "TECHNICIAN";
+
            // _applicationUser.Id = 1;
-                
+
             var result = await _userManager.CreateAsync(_applicationUser, request.Password);
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(_applicationUser, "SUPERADMIN");
+                await _userManager.AddToRoleAsync(_applicationUser, UserRole);
                 response.IsSuccess = true;
                 return response;
             }

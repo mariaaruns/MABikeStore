@@ -23,6 +23,7 @@ namespace BikeStore.Infrastructure.Service
 
             var result = source.Skip((inputs.PageNumber - 1) * (inputs.PageSize))
                             .Take(inputs.PageSize).ToList();
+          
             var items = result.Adapt<List<T>>();
 
             PaginationModel<T> paginationVM = new PaginationModel<T>(currentPage, totalPages, pagesize, totalNoOfRecords,items);

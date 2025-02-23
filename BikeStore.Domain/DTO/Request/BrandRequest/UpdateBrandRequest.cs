@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace BikeStore.Domain.DTO.Request.BrandRequest
     {
         public int BrandId { get; set; }
         public string BrandName { get; set; }
+
         public string? Logo { get; set; }
+        public IFormFile LogoImage { get; set; }
     }
 }

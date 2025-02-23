@@ -1,24 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BikeStore.Application.Common
 {
-    public static class AppConstant 
+    public static class AppConstant
     {
-     
         public const string CREATED_SUCCESS = "Created successfully";
         public const string UPDATED_SUCCESS = "Updated successfully";
         public const string DELETED_SUCCESS = "Deleted successfully";
 
         public const string CRAETE_FAILED = "Create failed";
-        public const string UPDATE_FAILED= "Update failed";
+        public const string UPDATE_FAILED = "Update failed";
         public const string DELETE_FAILED = "Delete failed";
         public const string RECORDS_NOT_FOUND = "Records not found";
 
+
+        #region UserRoles
+        public const string ADMIN      = "ADMIN";
+        public const string SUPERADMIN = "SUPERADMIN";
+        public const string TECHNICIAN = "TECHNICIAN";
+
+        #endregion
 
         #region staticFilePath
 
@@ -48,6 +53,5 @@ namespace BikeStore.Application.Common
         public const string INSUFFICIENT_PERMISSION = "The user does not have the required permissions.";
         public const string RATE_LIMIT_EXCEED = "Too many requests have been made in a short time.";
         #endregion
-
     }
 }

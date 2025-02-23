@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Assets\Uploads\Avatars\" />
+    <Folder Include="Assets\Uploads\Brands\" />
     <Folder Include="Assets\Uploads\Products\" />
   </ItemGroup>
 

@@ -43,14 +43,23 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
         var hasher = new PasswordHasher<ApplicationUser>();
 
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<ApplicationUser>(entity =>entity.ToTable("Users")); // Renaming AspNetUsers to Users
-        modelBuilder.Entity<ApplicationRole>(entity => entity.ToTable("Roles")); // Renaming AspNetRoles to Roles
-        modelBuilder.Entity<IdentityUserRole<int>>(entity => entity.ToTable("UserRoles")); // Renaming AspNetUserRoles to UserRoles
-        modelBuilder.Entity<IdentityUserClaim<int>>(entity => entity.ToTable("UserClaims")); // Renaming AspNetUserClaims to UserClaims
-        modelBuilder.Entity<IdentityUserLogin<int>>(entity => entity.ToTable("UserLogins")); // Renaming AspNetUserLogins to UserLogins
-        modelBuilder.Entity<IdentityRoleClaim<int>>(entity => entity.ToTable("RoleClaims")); // Renaming AspNetRoleClaims to RoleClaims
+
+        modelBuilder.Entity<ApplicationUser>(entity =>entity.ToTable("Users"));
+        modelBuilder.Entity<ApplicationRole>(entity => entity.ToTable("Roles")); 
+        modelBuilder.Entity<IdentityUserRole<int>>(entity => entity.ToTable("UserRoles")); 
+        modelBuilder.Entity<IdentityUserClaim<int>>(entity => entity.ToTable("UserClaims"));
+        modelBuilder.Entity<IdentityUserLogin<int>>(entity => entity.ToTable("UserLogins"));
+        modelBuilder.Entity<IdentityRoleClaim<int>>(entity => entity.ToTable("RoleClaims"));
         modelBuilder.Entity<IdentityUserToken<int>>(entity => entity.ToTable("UserTokens"));
 
+        modelBuilder.Entity<RepairService>(entity =>
+        {
+            entity.HasOne<ApplicationUser>()
+           .WithOne(u => u.RepairService)
+           .HasForeignKey<RepairService>(s => s.AssignTo)
+           .OnDelete(DeleteBehavior.Cascade);
+        });
+        
         modelBuilder.Entity<Lookup>().HasData(
         new Lookup { LookupId = 1, LookupName = "Order Status", LookupValue = "Order Placed", CreatedDate = DateTime.Now, IsActive = true },
         new Lookup { LookupId = 2, LookupName = "Order Status", LookupValue = "In Progress", CreatedDate = DateTime.Now, IsActive = true },
@@ -215,15 +224,12 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
         modelBuilder.Entity<Staff>(entity =>
         {
             entity.HasKey(e => e.StaffId).HasName("PK__staffs__1963DD9C5F828E70");
-
+           // entity.Property(e => e.StaffId).ValueGeneratedNever();
             entity.Property(e => e.StaffId)
             .HasColumnName("staff_id");
-          
-
             entity.ToTable("staffs", "sales");
 
             entity.HasIndex(e => e.Email, "UQ__staffs__AB6E6164F5B4BF55").IsUnique();
-
             entity.Property(e => e.StaffId).HasColumnName("staff_id");
             entity.Property(e => e.Active).HasColumnName("active");
             entity.Property(e => e.Avatar).IsUnicode(false);
@@ -253,6 +259,11 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
             entity.HasOne(d => d.Store).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.StoreId)
                 .HasConstraintName("FK__staffs__store_id__440B1D61");
+
+             entity.HasOne<ApplicationUser>()
+             .WithOne(u => u.Staff)
+             .HasForeignKey<Staff>(s => s.StaffId)
+             .OnDelete(DeleteBehavior.Cascade);
 
 
         });

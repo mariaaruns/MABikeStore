@@ -11,27 +11,30 @@ using System.Threading.Tasks;
 namespace BikeStore.Application.CQRS.Queries.BrandQueries
 {
 
-    public record GetBrandByIdQuery(int id):IQuery<GetBrandResponse>;
+    public record GetBrandByIdQuery(int id) : IQuery<GetBrandResponse>;
     public class GetBrandByIdHandler : IQueryHandler<GetBrandByIdQuery, GetBrandResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public GetBrandByIdHandler(IUnitOfWork unitOfWork) {
+        public GetBrandByIdHandler(IUnitOfWork unitOfWork)
+        {
             _unitOfWork = unitOfWork;
         }
         public async Task<GetBrandResponse> Handle(GetBrandByIdQuery request, CancellationToken cancellationToken)
         {
-                var result = await _unitOfWork.BrandRepository.GetByIdAsync(x => x.BrandId == request.id);
-            if (result is null) {
-
-                return new GetBrandResponse();
+            var result = await _unitOfWork.BrandRepository.GetByIdAsync(x => x.BrandId == request.id);
+            
+            if (result is null)
+            {
+             return new GetBrandResponse();
             }
 
-                return new GetBrandResponse { 
-                BrandId=result.BrandId,
-                BrandName=result.BrandName,
-                Logo=result.Logo
-                };
+            return new GetBrandResponse
+            {
+                BrandId = result.BrandId,
+                BrandName = result.BrandName,
+                Logo = result.Logo
+            };
         }
     }
 }

@@ -4,6 +4,7 @@ using BikeStore.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BikeStore.Persistence.Migrations
 {
     [DbContext(typeof(BikeStoresContext))]
-    partial class BikeStoresContextModelSnapshot : ModelSnapshot
+    [Migration("20250222135538_Addfk_RepairService")]
+    partial class Addfk_RepairService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,7 +179,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 1,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9350),
+                            CreatedDate = new DateTime(2025, 2, 22, 19, 25, 33, 562, DateTimeKind.Local).AddTicks(1398),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Order Placed"
@@ -184,7 +187,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 2,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9386),
+                            CreatedDate = new DateTime(2025, 2, 22, 19, 25, 33, 562, DateTimeKind.Local).AddTicks(1596),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "In Progress"
@@ -192,7 +195,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 3,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9390),
+                            CreatedDate = new DateTime(2025, 2, 22, 19, 25, 33, 562, DateTimeKind.Local).AddTicks(1601),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Ready for Pickup/Delivery"
@@ -200,7 +203,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 4,
-                            CreatedDate = new DateTime(2025, 2, 22, 19, 49, 26, 499, DateTimeKind.Local).AddTicks(9393),
+                            CreatedDate = new DateTime(2025, 2, 22, 19, 25, 33, 562, DateTimeKind.Local).AddTicks(1605),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Completed"
@@ -365,9 +368,6 @@ namespace BikeStore.Persistence.Migrations
 
                     b.Property<DateTime?>("FromDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Issues")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobileNo")
                         .HasColumnType("nvarchar(max)");

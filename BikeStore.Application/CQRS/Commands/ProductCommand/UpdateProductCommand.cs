@@ -41,7 +41,7 @@ namespace BikeStore.Application.CQRS.Commands.ProductCommand
                     if (!string.IsNullOrEmpty(Product.Image))
                     {
                         var oldImageFilePath= Path.Combine(request.ImagePath, Product.Image);
-                        _fileService.DeleteFile(oldImageFilePath);
+                        await _fileService.DeleteFileAsync(oldImageFilePath);
                     }
                     var newImageName = await _fileService.SaveFileAsync(request.Command.ImageFile,request.ImagePath);
                     request.Command.Image = newImageName;

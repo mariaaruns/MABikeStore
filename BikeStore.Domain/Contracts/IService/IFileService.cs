@@ -10,6 +10,6 @@ namespace BikeStore.Domain.Contracts.IService
     public interface IFileService
     {
         Task<string> SaveFileAsync(IFormFile file, string folderPath);
-        void DeleteFile(string filePath);
+        Task<bool> DeleteFileAsync(string filePath);
     }
 }

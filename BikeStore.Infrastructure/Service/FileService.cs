@@ -10,24 +10,33 @@ namespace BikeStore.Infrastructure.Service
 {
     public class FileService : IFileService
     {
-        public void DeleteFile(string filePath)
+        public  async Task<bool> DeleteFileAsync(string filePath)
         {
-            if (File.Exists(filePath)) {
+            if (File.Exists(filePath)) 
+            {
                 File.Delete(filePath);
+                await Task.CompletedTask;
+                return true;
             }
+            return false ;
         }
 
         public async Task<string> SaveFileAsync(IFormFile file, string folderPath)
         {
-            var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
-            var filePath = Path.Combine(folderPath, uniqueFileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            if (file.Length > 0)
             {
-                await file.CopyToAsync(stream);
+                var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+                var filePath = Path.Combine(folderPath, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return uniqueFileName;
             }
 
-            return uniqueFileName;
+            return string.Empty;
         }
     }
 }
