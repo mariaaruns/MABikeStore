@@ -11,5 +11,6 @@ namespace BikeStore.Domain.Contracts.IService
     {
         Task<string> SaveFileAsync(IFormFile file, string folderPath);
         Task<bool> DeleteFileAsync(string filePath);
+       // Task<IFormFile> ConvertBase64StringToFile(string base64String);
     }
 }

@@ -7,7 +7,7 @@
 @using BikeStore.UI.Contracts.Interface
 @inject IDialogService DialogService
 
-<MudTable FixedHeader="true" Height="300px" FixedFooter="true" ServerData="ServerReload" Dense="true" Loading="@(!isOkResponse)" Hover="true" @ref="table">
+<MudTable FixedHeader="true" Height="300px" FixedFooter="true"  ServerData="ServerReload"  Dense="true" Loading="@(!isOkResponse)" Hover="true" @ref="table">
     <ToolBarContent>
         <MudButton Color="Color.Primary" onclick="@(()=>OpenEditDialog(0))" ButtonType="ButtonType.Button" IconColor="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add">Add Brand</MudButton>
         <MudSpacer />
@@ -39,7 +39,7 @@
         <MudText>Loading...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager  />
+        <MudTablePager   />
     </PagerContent>
 </MudTable>
 
@@ -60,10 +60,11 @@
 
     private async Task<TableData<GetBrandResponse>> ServerReload(TableState state, CancellationToken token)
     {
+        int pagew = table.CurrentPage;
         var BrandRequest = new GetBrandRequest
             {
                 BrandFilter = searchString,
-                PageNumber = state.Page == 0 ? 1 : state.Page,
+                PageNumber = state.Page+1,
                 PageSize = state.PageSize,
                 IsActive = Status == "Active"
             };

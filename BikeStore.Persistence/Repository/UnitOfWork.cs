@@ -3,6 +3,7 @@ using BikeStore.Domain.Contracts.IRepository;
 using BikeStore.Persistence.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,8 +29,14 @@ namespace BikeStore.Persistence.Repository
 
         public IRepairServiceRepository repairServiceRepository { get; private set; }
 
-        private readonly BikeStoresContext _dbContext;
+        public IInvoiceItemsRepository InvoiceItemsRepository { get; private set; }
 
+        public IRepairIssuesRepository RepairIssuesRepository { get; private set; }
+
+        public IInvoiceRepository InvoiceRepository { get; private set; }
+
+        private readonly BikeStoresContext _dbContext;
+        private IDbContextTransaction _transaction;
         public UnitOfWork(BikeStoresContext dbcontext) 
         {
             _dbContext = dbcontext;
@@ -40,7 +47,9 @@ namespace BikeStore.Persistence.Repository
             LookupRepository = new LookupRepository(_dbContext);
             repairServiceRepository = new RepairServiceRepository(_dbContext);
             stockRepository = new StockRepository(_dbContext);
-
+            InvoiceRepository = new InvoiceRepository(_dbContext);
+            InvoiceItemsRepository = new InvoiceItemsRepository(_dbContext);
+            RepairIssuesRepository = new RepairIssuesRepository(_dbContext);
         }
         public void Dispose()
         {
@@ -53,5 +62,28 @@ namespace BikeStore.Persistence.Repository
             return result > 0;
         }
 
+        public async Task BeginTransactionAsync()
+        {
+            _transaction = await _dbContext.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            if (_transaction != null) {
+
+                await _transaction.CommitAsync();
+                await _transaction.DisposeAsync();
+
+            }
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            if (_transaction != null)
+            {
+                await _transaction.RollbackAsync();
+                await _transaction.DisposeAsync();
+            }
+        }
     }
 }

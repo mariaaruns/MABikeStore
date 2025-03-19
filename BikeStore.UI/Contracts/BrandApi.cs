@@ -6,6 +6,8 @@ using BikeStore.Domain.DTO.Response.UserResponse;
 using BikeStore.Domain.Models;
 using BikeStore.UI.Authentication;
 using BikeStore.UI.Contracts.Interface;
+using MediatR;
+using Microsoft.AspNetCore.Components.Forms;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
@@ -76,15 +78,13 @@ namespace BikeStore.UI.Contracts
 
         public async Task<ApiResponse<GetBrandResponse>> UpdateBrandAsync(UpdateBrandRequest request)
         {
+/*
             var content = JsonSerializer.Serialize(request);
-            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-            var UpdateRequest = await _client.PutAsync($"api/brand/updatebrand", bodyContent);
-            var brandContent = await UpdateRequest.Content.ReadAsStringAsync();
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");*/
+            var updateRequest = await _client.PutAsJsonAsync<UpdateBrandRequest>("api/brand/updatebrand", request);
+            var brandContent = await updateRequest.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<ApiResponse<GetBrandResponse>>(brandContent, _options);
-            if (!UpdateRequest.IsSuccessStatusCode)
-                return result;
-
-            return result;
+            return result ?? new ApiResponse<GetBrandResponse>();
         }
 
         public async Task<ApiResponse<GetBrandResponse>> CreateBrandAsync(CreateBrandRequest request)

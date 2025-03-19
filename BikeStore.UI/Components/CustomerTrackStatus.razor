@@ -1,0 +1,86 @@
+﻿@layout CustomerLayout
+@page "/TrackStatus"
+@using BikeStore.UI.AppConstant
+
+
+<h2> <q>@Greetings</q> </h2>
+
+<MudGrid Justify="Justify.Center">
+
+    <MudItem xs="12">
+
+        <MudCard Elevation="0">
+
+            <MudCardActions>
+                <MudButton Variant="@Variant.Filled" Color="@Color.Dark" EndIcon="@Icons.Material.Rounded.Download" ButtonType="ButtonType.Button">invoice</MudButton>
+            </MudCardActions>
+
+            <MudCardContent Class="d-sm-flex">
+            
+                <MudItem xs="12" sm="9">
+                    <MudTimeline>
+
+                        <MudTimelineItem Variant="Variant.Filled" Size="Size.Large">
+                            <ItemDot>
+                                <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.Pending"></MudIcon>
+                            </ItemDot>
+                        </MudTimelineItem>
+
+                        <MudTimelineItem>
+                            <MudText Align="Align.End">Repairing</MudText>
+                        </MudTimelineItem>
+
+                        <MudTimelineItem Color="Color.Primary">
+                            <MudText>Completed</MudText>
+                        </MudTimelineItem>
+                    </MudTimeline>
+                </MudItem>
+                
+                <MudItem xs="12" sm="3">
+                    <MudItem Class="mb-2">
+                    <MudText>Service Number</MudText>
+                    <MudTextField @bind-Value="@ServiceNo" Label="Enter your service number" Variant="Variant.Text"></MudTextField>
+                    
+                    <MudText>Mobile number</MudText>
+                    <MudTextField @bind-Value="@MobileNo" Label="Enter your mobile number" Variant="Variant.Text"></MudTextField>
+                    </MudItem>
+                    <MudButton EndIcon="@Icons.Material.Rounded.Timeline" Variant="Variant.Filled" Color="Color.Dark">Track</MudButton>
+                </MudItem>
+        
+            </MudCardContent>
+
+        </MudCard>
+
+    </MudItem>
+
+</MudGrid>
+
+
+@code {
+
+    private string Greetings = string.Empty;
+
+    private string ServiceNo { get; set; }
+    private string MobileNo { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Greetings = Showgreetings();
+    }
+
+    private string Showgreetings()
+    {
+        DateTime timeOfDay = DateTime.Now;
+
+        return timeOfDay switch
+        {
+            var time when time.Hour >= 4 && time.Hour < 12 => ApplicationConstant.Morning,
+            var time when time.Hour >= 12 && time.Hour < 17 => ApplicationConstant.Afternoon,
+            var time when time.Hour >= 17 && time.Hour < 22 => ApplicationConstant.Evening,
+            var time when time.Hour >= 22 && time.Hour < 4 => ApplicationConstant.Night,
+            _ => "Hello"
+        };
+    }
+
+
+}

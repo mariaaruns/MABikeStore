@@ -14,5 +14,7 @@ namespace BikeStore.Domain.Contracts.IRepository
         Task<IQueryable<Stock>> GetAllStockAsync();
 
         Task<Stock> UpdateQtyAsync(Stock entity);
+
+        Task<List<Stock>> AddNewStock(List<Stock> entity);
     }
 }

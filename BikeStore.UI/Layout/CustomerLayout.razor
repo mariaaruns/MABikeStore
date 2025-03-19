@@ -1,0 +1,25 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudAppBar Color="Color.Dark" Fixed="true">
+
+    <MudText>Track your repair status</MudText>
+   <MudSpacer />
+</MudAppBar>
+
+<MudMainContent>
+
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+        @Body
+    </MudContainer>
+
+</MudMainContent>
+
+@code
+{
+
+}

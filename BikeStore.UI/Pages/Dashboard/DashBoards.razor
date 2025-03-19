@@ -1,8 +1,184 @@
 ﻿@page "/"
-<SectionContent SectionName="page-title">
-    <MudChip T="string" Icon="@Icons.Material.Filled.Dashboard" Size="Size.Medium" Color="Color.Dark" IconColor="Color.Success">Dashboard</MudChip>
-</SectionContent>
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles ="SUPER ADMIN")]
+
+<MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="false">
+    <SectionContent SectionName="page-title">
+        <MudChip T="string" Icon="@Icons.Material.Filled.Dashboard" Size="Size.Medium" Color="Color.Dark" IconColor="Color.Success">Dashboard</MudChip>
+    </SectionContent>
+</MudHidden>
+
+
+<MudGrid Justify="Justify.Center" Class="my-2">
+    <MudGrid Justify="Justify.FlexEnd">
+        <MudItem xs="2" Class="mt-1">
+            <label>Year</label>
+            <MudSelect @bind-Value="enumValue"
+            TransformOrigin="Origin.CenterCenter"
+            Variant="Variant.Text"
+            AdornmentIcon="@Icons.Material.Filled.CalendarMonth"
+            Adornment="Adornment.Start" Class="drp_width" InputClass="txt_white" OuterClass="txt_white"
+            AdornmentColor="Color.Success">
+                @foreach (Year item in Enum.GetValues(typeof(Year)))
+                {
+                    var year = item;
+                    <MudSelectItem Value="@(year)">@year</MudSelectItem>
+                }
+        </MudSelect>
+    </MudItem>
+    </MudGrid>
+    <MudFlexBreak/>
+    <MudItem xs="12" sm="6"  lg="3">
+
+        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.Pink.Default};")>
+            <MudCardContent>
+                <MudText Class="txt-white" >Story of the day</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6"  lg="3">
+        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.DeepPurple.Default};")>
+            <MudCardContent>
+                <MudText>Story of the day</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="6"  lg="3">
+        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.Orange.Darken4};")>
+            <MudCardContent>
+                <MudText>Story of the day</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" lg="3">
+        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.BlueGray.Darken4};")>
+            <MudCardContent>
+                <MudText>Story of the day</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+
+
+    </MudItem>
+
+    <MudItem  sm="12" md="6" >
+        <MudCard>
+            <MudCardHeader>
+
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body1">Line Chart</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.CandlestickChart" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardMedia Image="images/pilars.jpg"  Height="250" />
+            <MudCardContent>
+                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+            </MudCardContent>
+        </MudCard>
+
+    </MudItem>
+    <MudItem sm="12" md="6">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body1">Pie chart</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.PieChart" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardMedia Image="images/pilars.jpg" Height="250" />
+            <MudCardContent>
+                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+            </MudCardContent>
+        </MudCard>
+
+    </MudItem>
+
+    <MudItem sm="12" md="6">
+
+        <MudCard Elevation="5">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body1">Upcoming Delivery</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.TableRows" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardMedia Image="images/pilars.jpg" Height="250" />
+            <MudCardContent>
+                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+            </MudCardContent>
+        </MudCard>
+
+    </MudItem>
+
+    <MudItem sm="12" md="6">
+
+        <MudCard Elevation="5">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body1">Today Orders</MudText>
+                    <MudDivider Class="border-2" />
+                </CardHeaderContent>
+
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.TableRows" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardMedia Image="images/pilars.jpg" Height="250" />
+            <MudDivider />  
+            <MudCardContent>
+                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+            </MudCardContent>
+        </MudCard>
+
+    </MudItem>
+
+
+</MudGrid>
+
+<style>
+    .txt_white {
+        color: black;
+    }
+
+    .drp_width {
+        padding: 0px
+    }
+</style>
 
 @code {
+    
+    private string stringValue { get; set; } = "2025";
 
+    private Year enumValue { get; set; } = Year.Y2025;
+    
+    public enum Year
+    {
+        Y2025=2025,
+        Y2024=2024,
+        Y2023=2023,
+        Y2022=2022,   
+    }
+    
 }

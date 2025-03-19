@@ -146,6 +146,68 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("customers", "sales");
                 });
 
+            modelBuilder.Entity("BikeStore.Domain.Models.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__Invoice__5E5A8E27729211BE");
+
+                    b.HasIndex("ServiceId")
+                        .IsUnique();
+
+                    b.ToTable("Invoice", "Service");
+                });
+
+            modelBuilder.Entity("BikeStore.Domain.Models.InvoiceItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__InvoiceItems__5E5A8E27729211BE");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceItems", "Service");
+                });
+
             modelBuilder.Entity("BikeStore.Domain.Models.Lookup", b =>
                 {
                     b.Property<int>("LookupId")
@@ -176,7 +238,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 1,
-                            CreatedDate = new DateTime(2025, 2, 23, 23, 5, 56, 349, DateTimeKind.Local).AddTicks(7949),
+                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8646),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Order Placed"
@@ -184,7 +246,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 2,
-                            CreatedDate = new DateTime(2025, 2, 23, 23, 5, 56, 349, DateTimeKind.Local).AddTicks(7985),
+                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8684),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "In Progress"
@@ -192,7 +254,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 3,
-                            CreatedDate = new DateTime(2025, 2, 23, 23, 5, 56, 349, DateTimeKind.Local).AddTicks(7991),
+                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8688),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Ready for Pickup/Delivery"
@@ -200,7 +262,7 @@ namespace BikeStore.Persistence.Migrations
                         new
                         {
                             LookupId = 4,
-                            CreatedDate = new DateTime(2025, 2, 23, 23, 5, 56, 349, DateTimeKind.Local).AddTicks(7994),
+                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8692),
                             IsActive = true,
                             LookupName = "Order Status",
                             LookupValue = "Completed"
@@ -389,6 +451,35 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("products", "production");
                 });
 
+            modelBuilder.Entity("BikeStore.Domain.Models.RepairIssues", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("FixedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IssueDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IssueFixed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RepairServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK__RepairIssues__5E5A8E27729211BE");
+
+                    b.HasIndex("RepairServiceId");
+
+                    b.ToTable("RepairIssues", "Service");
+                });
+
             modelBuilder.Entity("BikeStore.Domain.Models.RepairService", b =>
                 {
                     b.Property<int>("ServiceId")
@@ -416,9 +507,6 @@ namespace BikeStore.Persistence.Migrations
                     b.Property<DateTime?>("FromDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Issues")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("MobileNo")
                         .HasColumnType("nvarchar(max)");
 
@@ -428,13 +516,14 @@ namespace BikeStore.Persistence.Migrations
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
 
-                    b.HasKey("ServiceId");
+                    b.HasKey("ServiceId")
+                        .HasName("PK__RepairService__5E5A8E27729211BE");
 
                     b.HasIndex("AssignTo");
 
                     b.HasIndex("StoreId");
 
-                    b.ToTable("RepairService");
+                    b.ToTable("RepairService", "Service");
                 });
 
             modelBuilder.Entity("BikeStore.Domain.Models.Staff", b =>
@@ -827,6 +916,28 @@ namespace BikeStore.Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BikeStore.Domain.Models.Invoice", b =>
+                {
+                    b.HasOne("BikeStore.Domain.Models.RepairService", "RepairServices")
+                        .WithOne("Invoice")
+                        .HasForeignKey("BikeStore.Domain.Models.Invoice", "ServiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("RepairServices");
+                });
+
+            modelBuilder.Entity("BikeStore.Domain.Models.InvoiceItems", b =>
+                {
+                    b.HasOne("BikeStore.Domain.Models.Invoice", "Invoices")
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Invoices");
+                });
+
             modelBuilder.Entity("BikeStore.Domain.Models.Order", b =>
                 {
                     b.HasOne("BikeStore.Domain.Models.Customer", "Customer")
@@ -906,6 +1017,17 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("Brand");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("BikeStore.Domain.Models.RepairIssues", b =>
+                {
+                    b.HasOne("BikeStore.Domain.Models.RepairService", "RepairServices")
+                        .WithMany("RepairIssues")
+                        .HasForeignKey("RepairServiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("RepairServices");
                 });
 
             modelBuilder.Entity("BikeStore.Domain.Models.RepairService", b =>
@@ -1048,6 +1170,11 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("Orders");
                 });
 
+            modelBuilder.Entity("BikeStore.Domain.Models.Invoice", b =>
+                {
+                    b.Navigation("InvoiceItems");
+                });
+
             modelBuilder.Entity("BikeStore.Domain.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
@@ -1060,6 +1187,14 @@ namespace BikeStore.Persistence.Migrations
                     b.Navigation("OrderItems");
 
                     b.Navigation("Stocks");
+                });
+
+            modelBuilder.Entity("BikeStore.Domain.Models.RepairService", b =>
+                {
+                    b.Navigation("Invoice")
+                        .IsRequired();
+
+                    b.Navigation("RepairIssues");
                 });
 
             modelBuilder.Entity("BikeStore.Domain.Models.Staff", b =>

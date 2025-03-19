@@ -10,12 +10,11 @@ using System.Threading.Tasks;
 
 namespace BikeStore.Persistence.User
 {
-    public class ApplicationUser : IdentityUser<int>
+    public class ApplicationUser:IdentityUser<int>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Avatar { get; set; }
-
         public virtual Staff Staff { get; set; }
         public virtual ICollection<RepairService> RepairService {get;set;}
         public virtual ICollection<IdentityUserRole<int>> UserRoles { get; set; }

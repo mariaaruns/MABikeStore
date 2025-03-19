@@ -33,14 +33,40 @@ namespace BikeStore.Application.CQRS.Commands.ProductCommand
                 var newImageName = await _fileService.SaveFileAsync(request.Command.ImageFile, request.ImagePath);
                 request.Command.Image = newImageName;
             }
-
+            
             var ProductEntity = request.Command.Adapt<Product>();
             var result = await _unitOfWork.ProductRepository.CreateAsync(ProductEntity);
-            bool isSuccess = await _unitOfWork.SaveAsync();
-            if (isSuccess)
-            {
-                return result.Adapt<GetProductResponse>(); ;
+
+            if (result is not null) {
+
+                List<Stock> stockList = new List<Stock>();
+
+                var stores = await _unitOfWork.StoreRepository.GetAllAsync();
+
+                var activeStoresId = stores
+                                    .Select(x => x.StoreId).ToList();
+
+                foreach (var storeId in activeStoresId)
+                {
+                    stockList.Add(new Stock
+                    {
+                        ProductId = result.ProductId,
+                        StoreId = storeId,
+                        Quantity = 0
+                    });
+                }
+
+                var StockEnitity = await _unitOfWork.stockRepository.AddNewStock(stockList);
+
+                bool isSuccess = await _unitOfWork.SaveAsync();
+             
+                if (isSuccess)
+                {
+                    return result.Adapt<GetProductResponse>(); ;
+                }
+
             }
+            
             return default!;
         }
     }

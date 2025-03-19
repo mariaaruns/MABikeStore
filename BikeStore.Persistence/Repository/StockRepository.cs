@@ -37,6 +37,12 @@ namespace BikeStore.Persistence.Repository
             var stockEntity = _dbContext.Stocks.Update(result);
             return stockEntity.Entity;
         }
+        public async Task<List<Stock>> AddNewStock(List<Stock> entity)
+        {
+            await _dbContext.AddRangeAsync(entity);
+            return entity;
+        }
+
 
     }
 }

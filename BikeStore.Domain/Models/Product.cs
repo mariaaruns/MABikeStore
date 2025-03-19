@@ -13,7 +13,7 @@ public partial class Product
     public short ModelYear { get; set; }
     public decimal ListPrice { get; set; }
     public string? Image { get; set; }
-    public bool? IsActive { get; set; }
+    //public bool? IsActive { get; set; }
     public virtual Brand Brand { get; set; } = null!;
     public virtual Category Category { get; set; } = null!;
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

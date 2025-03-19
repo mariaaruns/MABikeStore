@@ -93,7 +93,7 @@ namespace BikeStore.Api.Controllers
         }
 
         [HttpPut("updatebrand")]
-        public async Task<IActionResult> UpdateExistingBrand([FromForm] UpdateBrandRequest request)
+        public async Task<IActionResult> UpdateExistingBrand([FromBody] UpdateBrandRequest request)
         {
             var uploadsFolderPath = Path.Combine(_environment.ContentRootPath, "Assets", "Uploads", "Brands");
             var result = await _mediator.Send(new UpdateBrandCommand(request, uploadsFolderPath));

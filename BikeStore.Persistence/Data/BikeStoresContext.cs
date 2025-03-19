@@ -34,10 +34,14 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
     public virtual DbSet<Stock> Stocks { get; set; }
 
     public virtual DbSet<Store> Stores { get; set; }
-
+    
+    public virtual DbSet<Payment> Payments { get; set; }
     public virtual DbSet<Lookup> Lookup { get; set; }
 
     public virtual DbSet<RepairService> RepairService { get; set; }
+    public virtual DbSet<RepairIssues> RepairIssues { get; set; }
+    public virtual DbSet<Invoice> Invoice { get; set; }
+    public virtual DbSet<InvoiceItems> InvoiceItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,6 +59,10 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
 
         modelBuilder.Entity<RepairService>(entity =>
         {
+            entity.HasKey(e => e.ServiceId).HasName("PK__RepairService__5E5A8E27729211BE");
+
+            entity.ToTable("RepairService", "Service");
+
             entity.HasOne<ApplicationUser>()
            .WithMany(u => u.RepairService)
            .HasForeignKey(s => s.AssignTo)
@@ -64,7 +72,41 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
            .WithMany(s => s.RepairServices)
            .HasForeignKey(rs => rs.StoreId)
            .OnDelete(DeleteBehavior.NoAction);
+        });
 
+        modelBuilder.Entity<RepairIssues>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__RepairIssues__5E5A8E27729211BE");
+
+            entity.ToTable("RepairIssues", "Service");
+
+            entity.HasOne(x => x.RepairServices)
+           .WithMany(u => u.RepairIssues)
+           .HasForeignKey(s => s.RepairServiceId)
+           .OnDelete(DeleteBehavior.NoAction);
+
+        });
+
+        modelBuilder.Entity<Invoice>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Invoice__5E5A8E27729211BE");
+            entity.ToTable("Invoice", "Service");
+
+            entity.HasOne(x=>x.RepairServices)
+           .WithOne(u => u.Invoice)
+           .HasForeignKey<Invoice>("ServiceId")
+           .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<InvoiceItems>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__InvoiceItems__5E5A8E27729211BE");
+            entity.ToTable("InvoiceItems", "Service");
+
+            entity.HasOne(x => x.Invoices)
+           .WithMany(u => u.InvoiceItems)
+           .HasForeignKey(x=>x.InvoiceId)
+           .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Lookup>().HasData(

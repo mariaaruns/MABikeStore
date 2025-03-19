@@ -17,7 +17,13 @@ namespace BikeStore.Domain.Contracts
         ILookupRepository LookupRepository { get; }
         IStockRepository stockRepository { get; }
         IRepairServiceRepository repairServiceRepository { get; }
+        IInvoiceItemsRepository InvoiceItemsRepository { get; }
+        IRepairIssuesRepository RepairIssuesRepository { get; }
+        IInvoiceRepository InvoiceRepository { get; }
         Task<bool> SaveAsync();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 
 

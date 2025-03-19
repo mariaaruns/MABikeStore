@@ -5,20 +5,34 @@
 <style>
     
     body {
-        
-        background-image: url('uploads\images\10198651_4382036.svg');
+        background-image: url('sample-data\\1319068_174853-owifgs-784.jpg');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
         margin: 0;
     }
   
-    .login-container {
+   /*  .login-container {
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
+    } */
+
+
+    .login-container {
+        width: 300px;
+        padding: 20px;
+        border-radius: 15px;
+        background: rgba(255,255 , 255, 0.8); /* Light transparent white */
+        backdrop-filter: blur(3px); /* Blur effect */
+        -webkit-backdrop-filter: blur(10px); /* For Safari */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        text-align: center;
+        color: black;
+        font-family: Arial, sans-serif;
     }
+
 </style>
 
 @if (ShowAuthError)
@@ -27,26 +41,32 @@
         <p>@Error</p>
     </div>
 }
-<div class="login-container">
-<MudCard Style="max-width: 600px; margin: auto; margin-top: 100px;">
-    <MudCardHeader>
-        <MudText Typo="Typo.h5" Align="Align.Center">Login</MudText>
-    </MudCardHeader>
-    <MudCardContent>
-        <MudForm @ref="_form" Valid="HandleValidSubmit">
-            <MudTextField Label="Email" @bind-Value="LoginModel.UserName" For="@(() => LoginModel.UserName)"
-                          Required="true" RequiredError="Email is required"
-                           />
-            <MudTextField Label="Password" @bind-Value="LoginModel.Password" For="@(() => LoginModel.Password)"
-                          InputType="InputType.Password"
-                          Required="true" RequiredError="Password is required" />
-            <MudButton OnClick="Submit"  Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">
-                Login
-            </MudButton>
-        </MudForm>
-    </MudCardContent>
-</MudCard>
-</div>
+<MudGrid Justify="Justify.Center" Style=" display:flex; align-items:center;height:100vh;"  >
+
+    
+        <MudCard Style="max-width: 300px;" Class="login-container">
+            <MudCardHeader>
+                <MudText Typo="Typo.h5" Align="Align.Center">Login</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudForm @ref="_form" Valid="HandleValidSubmit">
+
+                    <MudItem >
+                    <MudTextField Label="Email" @bind-Value="LoginModel.UserName" For="@(() => LoginModel.UserName)"
+                                  Required="true" RequiredError="Email is required" />
+                    <MudTextField Label="Password" @bind-Value="LoginModel.Password" For="@(() => LoginModel.Password)"
+                                  InputType="InputType.Password"
+                                  Required="true" RequiredError="Password is required" />
+                </MudItem>
+                <MudButton Class="mt-2" OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">
+                        Login
+                </MudButton>
+                </MudForm>
+            </MudCardContent>
+        </MudCard>
+    
+
+</MudGrid>
 @code {
    
    
