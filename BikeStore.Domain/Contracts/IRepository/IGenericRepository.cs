@@ -16,6 +16,9 @@ namespace BikeStore.Domain.Contracts.IRepository
         Task<IQueryable<T>> GetAllAsync();
 
         Task<T> GetByIdAsync(Expression<Func<T, bool>> condition);
+        Task<bool> ExistAsync(Expression<Func<T, bool>> predicate);
+
+
 
     }
 }

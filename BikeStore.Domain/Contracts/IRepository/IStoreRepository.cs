@@ -12,5 +12,8 @@ namespace BikeStore.Domain.Contracts.IRepository
     {
         Task<Store> UpdateStoreAsync(Store entity);
 
+        Task<bool> InactiveAsync(Store entity);
+
+        
     }
 }

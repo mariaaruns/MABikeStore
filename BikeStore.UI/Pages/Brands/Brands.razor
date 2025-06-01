@@ -1,5 +1,7 @@
 ﻿@page "/Brand"
 @using BikeStore.UI.Contracts.Interface
+@using BikeStore.UI.ViewModel
+@inject IBrandApi _brandApi
 <SectionContent SectionName="page-title">
     <MudChip T="string" Icon="@Icons.Material.Filled.Menu" Size="Size.Large" Color="Color.Dark" IconColor="Color.Success">Brands</MudChip>
 </SectionContent>
@@ -8,12 +10,12 @@
 
 <MudCard Class="m-2">
     <MudTabs Elevation="2" Rounded="true" Centered="true">
-        <MudTabPanel Text="Active" BadgeData='@ActiveBrandCount'>
+        <MudTabPanel Text="Active" BadgeData='@BrandVM.ActiveBrandCount'>
 
-            <BrandDataGrid OnCountChange="getBrandCount" Status="Active"></BrandDataGrid>
+            <BrandDataGrid OnCountChange="@BrandVM.GetBrandCount" Status="Active" BrandVM="BrandVM"></BrandDataGrid>
         </MudTabPanel>
-        <MudTabPanel Text="Inactive" BadgeData='@InactiveBrandCount'  BadgeColor="Color.Dark" >
-            <BrandDataGrid OnCountChange="getBrandCount" Status="InActive"></BrandDataGrid>
+        <MudTabPanel Text="Inactive" BadgeData='@BrandVM.InactiveBrandCount'  BadgeColor="Color.Dark" >
+            <BrandDataGrid OnCountChange="@BrandVM.GetBrandCount" Status="InActive" BrandVM="BrandVM"></BrandDataGrid>
         </MudTabPanel>
         @* <MudTabPanel Text="Up Coming" BadgeData='"N"' /> *@
 
@@ -22,36 +24,23 @@
 </MudCard>
 
 @code {
+    BrandViewModel BrandVM;
 
-    [Inject]
-    private IBrandApi _brandApi { get; set; }
-
-    private string storeName { get; set; }
-
-    private int  ActiveBrandCount{get;set;}=0;
-    private int  InactiveBrandCount{get;set;}=0;
-
+    protected override async Task OnInitializedAsync()
+    {
+        BrandVM = new BrandViewModel(_brandApi);
+        await Task.CompletedTask;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender) {
-            await getBrandCount();
+            await BrandVM.GetBrandCount();
             StateHasChanged();
         }
     }
-
-    private async Task getBrandCount() 
-    { 
-        var result = await _brandApi.GetBrandCountAsync();
-        
-        if (result.Data is { })
-        {
-            ActiveBrandCount = result.Data.ActiveBrandsCount;
-            InactiveBrandCount = result.Data.InActiveBrandsCount;
-
-            StateHasChanged();
-        }
-    }
+      
+    
 
 }
 

@@ -78,10 +78,10 @@ namespace BikeStore.UI.Contracts
 
         public async Task<ApiResponse<GetBrandResponse>> UpdateBrandAsync(UpdateBrandRequest request)
         {
-/*
-            var content = JsonSerializer.Serialize(request);
-            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");*/
-            var updateRequest = await _client.PutAsJsonAsync<UpdateBrandRequest>("api/brand/updatebrand", request);
+            var json = JsonSerializer.Serialize(request);
+            var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            var updateRequest = await _client.PutAsync("api/brand/updatebrand", jsonContent);
             var brandContent = await updateRequest.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<ApiResponse<GetBrandResponse>>(brandContent, _options);
             return result ?? new ApiResponse<GetBrandResponse>();

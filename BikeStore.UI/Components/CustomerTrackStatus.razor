@@ -2,6 +2,11 @@
 @page "/TrackStatus"
 @using BikeStore.UI.AppConstant
 
+<style>
+    td{
+    vertical-align:middle;
+    }
+</style>
 
 <h2> <q>@Greetings</q> </h2>
 
@@ -10,16 +15,65 @@
     <MudItem xs="12">
 
         <MudCard Elevation="0">
-
-            <MudCardActions>
-                <MudButton Variant="@Variant.Filled" Color="@Color.Dark" EndIcon="@Icons.Material.Rounded.Download" ButtonType="ButtonType.Button">invoice</MudButton>
-            </MudCardActions>
-
-            <MudCardContent Class="d-sm-flex">
-            
+            <MudCardContent Class="d-md-flex">
                 <MudItem xs="12" sm="9">
-                    <MudTimeline>
+                    <MudCard Elevation="0">
+                        <MudCardHeader>
+                            <MudChip T="string" Color="Color.Dark">Service Number : 1212</MudChip>
+                            <MudButton Class="rounded-pill" Size="Size.Small" Variant="@Variant.Filled" Color="@Color.Dark" EndIcon="@Icons.Material.Rounded.Download" ButtonType="ButtonType.Button">invoice</MudButton>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <table class="table table-borderless  table-responsive">
+                                <tbody>
+                                    <tr>
+                                        <td>Name</td>
+                                        <td width="10%">:</td>
+                                        <td>Arun</td>
 
+
+                                        <td>Date</td>
+                                        <td width="10%">:</td>
+                                        <td>22/09/1221</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Bike number</td>
+                                        <td width="10%">:</td>
+                                        <td>TN12AB1234</td>
+
+                                        <td>Estimated Date </td>
+                                        <td width="10%">:</td>
+                                        <td>31/12/2023</td>
+                                    </tr>
+
+                                    <tr class="">
+                                        <td>Phone no</td>
+                                        <td width="10%">:</td>
+                                        <td>9876543219</td>
+
+                                        <td>Repair Status</td>
+                                        <td width="10%">:</td>
+                                        <td><MudChip T="string" Size="Size.Small" Icon="@Icons.Material.Filled.Pending" Label="true" Color="Color.Warning">Pending</MudChip></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Incharge</td>
+                                        <td width="10%">:</td>
+                                        <td>Bastin</td>
+
+                                        <td>Store name</td>
+                                        <td width="10%">:</td>
+                                        <td>ABC</td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                        </MudCardContent>
+                    </MudCard>
+
+
+                    <MudTimeline>
                         <MudTimelineItem Variant="Variant.Filled" Size="Size.Large">
                             <ItemDot>
                                 <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.Pending"></MudIcon>
@@ -27,7 +81,7 @@
                         </MudTimelineItem>
 
                         <MudTimelineItem>
-                            <MudText Align="Align.End">Repairing</MudText>
+                            <MudText Align="Align.End">Working in progress</MudText>
                         </MudTimelineItem>
 
                         <MudTimelineItem Color="Color.Primary">
@@ -35,24 +89,29 @@
                         </MudTimelineItem>
                     </MudTimeline>
                 </MudItem>
-                
+
                 <MudItem xs="12" sm="3">
                     <MudItem Class="mb-2">
-                    <MudText>Service Number</MudText>
-                    <MudTextField @bind-Value="@ServiceNo" Label="Enter your service number" Variant="Variant.Text"></MudTextField>
-                    
-                    <MudText>Mobile number</MudText>
-                    <MudTextField @bind-Value="@MobileNo" Label="Enter your mobile number" Variant="Variant.Text"></MudTextField>
+                        <MudText>Service Number</MudText>
+                        <MudTextField @bind-Value="@ServiceNo" Label="Enter your service number" Variant="Variant.Text"></MudTextField>
+
+                        <MudText>Mobile number</MudText>
+                        <MudTextField @bind-Value="@MobileNo" Label="Enter your mobile number" Variant="Variant.Text"></MudTextField>
                     </MudItem>
                     <MudButton EndIcon="@Icons.Material.Rounded.Timeline" Variant="Variant.Filled" Color="Color.Dark">Track</MudButton>
                 </MudItem>
-        
+
             </MudCardContent>
 
         </MudCard>
 
     </MudItem>
+</MudGrid>
 
+<MudGrid>
+    <MudItem xs="12" md="9">
+     
+    </MudItem>
 </MudGrid>
 
 

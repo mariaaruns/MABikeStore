@@ -20,4 +20,9 @@
     <ProjectReference Include="..\BikeStore.Domain\BikeStore.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CQRS\Commands\OrderCommand\" />
+    <Folder Include="CQRS\Queries\OrderQueries\" />
+  </ItemGroup>
+
 </Project>

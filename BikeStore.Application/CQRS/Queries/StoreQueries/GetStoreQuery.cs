@@ -17,8 +17,8 @@ namespace BikeStore.Application.CQRS.Queries.StoreQueries
     public class GetStoreQueryHandler : IQueryHandler<GetStoreQuery, PaginationModel<GetStoreResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IPaginationService<GetStoreResponse, Store> _paginationService;
-        public GetStoreQueryHandler(IUnitOfWork unitOfWork, IPaginationService<GetStoreResponse, Store> paginationService)
+        private readonly IPaginationService<GetStoreResponse, GetStoreResponse> _paginationService;
+        public GetStoreQueryHandler(IUnitOfWork unitOfWork, IPaginationService<GetStoreResponse, GetStoreResponse> paginationService)
         {
             this._unitOfWork = unitOfWork;
             _paginationService = paginationService;
@@ -26,14 +26,22 @@ namespace BikeStore.Application.CQRS.Queries.StoreQueries
         public async Task<PaginationModel<GetStoreResponse>> Handle(GetStoreQuery request, CancellationToken cancellationToken)
         {
             var source = await _unitOfWork.StoreRepository.GetAllAsync();
-           
-            source = source.Where(
-                x => (string.IsNullOrEmpty(request.query.StateFilter) || x.State.Contains(request.query.StateFilter)) &&
-                     (string.IsNullOrEmpty(request.query.CityFilter) || x.City.Contains(request.query.CityFilter)) &&
-                     (string.IsNullOrEmpty(request.query.StoreNameFilter) || x.StoreName.Contains(request.query.StoreNameFilter))
-            );
 
-            var result = _paginationService.Pagination(source, request.query);
+           var GetStores = source.Where(
+                x => 
+                (
+                    string.IsNullOrEmpty(request.query.StoreNameFilter)
+                    || x.StoreName.Contains(request.query.StoreNameFilter)
+                )
+            ).Select(x=> new GetStoreResponse() { 
+            StoreId=x.StoreId,
+            StoreName=x.StoreName,
+            Email=x.Email,
+            Phone=x.Phone,
+            Address= $"{x.Street},{x.City},{x.State},{x.ZipCode}"
+            });
+
+            var result = _paginationService.Pagination(GetStores, request.query);
             return result;
 
         }

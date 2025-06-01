@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
+using System.Text.Json;
 
 namespace BikeStore.Api.Controllers
 {
@@ -32,8 +33,8 @@ namespace BikeStore.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllBrands([FromBody] GetBrandRequest request) 
         {
-
-            var brandList = await _mediator.Send(new GetBrandQuery(request));
+            var uploadsFolderPath = Path.Combine(_environment.ContentRootPath, "Assets", "Uploads", "Brands");
+            var brandList = await _mediator.Send(new GetBrandQuery(request,uploadsFolderPath));
             if (brandList is null) 
             {
                 return Ok(ApiResponse<GetBrandResponse>.Error("No Records found", HttpStatusCode.BadRequest, null, null));
@@ -78,7 +79,7 @@ namespace BikeStore.Api.Controllers
         }
         
         [HttpPost("CreateBrand")]
-        public async Task<IActionResult> AddNewBrand([FromForm] CreateBrandRequest request) 
+        public async Task<IActionResult> AddNewBrand([FromBody] CreateBrandRequest request) 
         {
             var uploadsFolderPath = Path.Combine(_environment.ContentRootPath, "Assets", "Uploads", "Brands");
             var result = await _mediator.Send(new CreateBrandcommand(request,uploadsFolderPath));
@@ -96,16 +97,17 @@ namespace BikeStore.Api.Controllers
         public async Task<IActionResult> UpdateExistingBrand([FromBody] UpdateBrandRequest request)
         {
             var uploadsFolderPath = Path.Combine(_environment.ContentRootPath, "Assets", "Uploads", "Brands");
+            
             var result = await _mediator.Send(new UpdateBrandCommand(request, uploadsFolderPath));
+
             if (result is null)
             {
                 return Ok(ApiResponse<CreateBrandResponse>.Error(message: AppConstant.UPDATE_FAILED, HttpStatusCode.BadRequest));
             }
-            else 
+            else
             {
                 return Ok(ApiResponse<CreateBrandResponse>.Success(message: AppConstant.CREATED_SUCCESS, HttpStatusCode.OK, result));
-            }
-
+            }          
         }
 
         [HttpDelete("DeleteBrand")]

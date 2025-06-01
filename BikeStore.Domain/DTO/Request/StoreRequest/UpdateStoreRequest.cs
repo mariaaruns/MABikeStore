@@ -8,7 +8,7 @@ namespace BikeStore.Domain.DTO.Request.StoreRequest
 {
     public class UpdateStoreRequest
     {
-        public string StoreId { get; set; }
+        public int StoreId { get; set; }
         public string StoreName { get; set; } = null!;
 
         public string? Phone { get; set; }

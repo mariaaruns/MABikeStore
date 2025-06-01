@@ -5,28 +5,36 @@
 @using BikeStore.Domain.DTO.Response.BrandResponse
 @using BikeStore.UI.Components
 @using BikeStore.UI.Contracts.Interface
+@using BikeStore.UI.ViewModel
 @inject IDialogService DialogService
 
-<MudTable FixedHeader="true" Height="300px" FixedFooter="true"  ServerData="ServerReload"  Dense="true" Loading="@(!isOkResponse)" Hover="true" @ref="table">
+
+
+<MudTable FixedHeader="true" Height="300px" FixedFooter="true" ServerData="ServerReload" Dense="true" Loading="@(!BrandVM.isOkResponse)" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudButton Color="Color.Primary" onclick="@(()=>OpenEditDialog(0))" ButtonType="ButtonType.Button" IconColor="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add">Add Brand</MudButton>
+        <MudButton Color="Color.Primary" onclick="@(()=>OpenEditDialog(0,"",""))" ButtonType="ButtonType.Button" IconColor="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add">Add Brand</MudButton>
         <MudSpacer />
         <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
         AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
+        <MudTh><b>Logo</b></MudTh>
         @*  <MudTh><MudTableSortLabel SortLabel="nr_field" T="GetBrandResponse"><b>Id</b></MudTableSortLabel></MudTh> *@
         <MudTh><MudTableSortLabel SortLabel="sign_field" T="GetBrandResponse"><b>Name</b></MudTableSortLabel></MudTh>
         <MudTh><b>Action</b></MudTh>
     </HeaderContent>
     <RowTemplate>
-        @*  <MudTd DataLabel="Id">@context.BrandId</MudTd> *@
+        <MudTd DataLabel="Logo">
+            <MudAvatar Size="Size.Large">
+                <MudImage Src="@context.Logo"></MudImage>
+            </MudAvatar>
+        </MudTd>
         <MudTd DataLabel="Name">@context.BrandName</MudTd>
         <MudTd DataLabel="Action">
             <MudButtonGroup Color="Color.Transparent" Variant="Variant.Filled">
                 @if (Status == "Active")
                 {
-                    <MudIconButton Color="Color.Secondary" onclick="@(()=>OpenEditDialog(context.BrandId))" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                    <MudIconButton Color="Color.Secondary" onclick="@(()=>OpenEditDialog(context.BrandId,context.BrandName,context.Logo))" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
                 }
                 <MudIconButton Color="Color.Error" onclick="@(()=>DeleteAlert(context.BrandId))" Icon="@(Status == "Active" ?Icons.Material.Filled.Delete :Icons.Material.Filled.RestoreFromTrash)"></MudIconButton>
             </MudButtonGroup>
@@ -39,73 +47,81 @@
         <MudText>Loading...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager   />
+         <MudTablePager    /> 
+        @* <MudPagination SelectedChanged="PageChanged" Variant="@Variant.Filled" Count=" BrandVM.data.TotalPages" Class="pa-4" /> *@
     </PagerContent>
 </MudTable>
 
 @code {
+    private void PageChanged(int i)
+    {
+        table.NavigateTo(i - 1);
+    }
+
     [Parameter]
     public string Status { get; set; }
 
     [Parameter]
     public EventCallback OnCountChange { get; set; }
 
-    public bool isOkResponse { get; set; } = false;
-    private string searchString = null;
+    [Parameter]
+    public BrandViewModel BrandVM { get; set; }
 
-    public PaginationModel<GetBrandResponse> data;
+    protected override async Task OnInitializedAsync()
+    {
+        BrandVM.status = Status;
+       await Task.Delay(600);
+
+    }
+
+
+
+    
 
     //private IEnumerable<GetBrandResponse> pagedData;
     private MudTable<GetBrandResponse> table;
 
     private async Task<TableData<GetBrandResponse>> ServerReload(TableState state, CancellationToken token)
     {
+
         int pagew = table.CurrentPage;
         var BrandRequest = new GetBrandRequest
             {
-                BrandFilter = searchString,
-                PageNumber = state.Page+1,
+                BrandFilter = BrandVM.searchString,
+                PageNumber = state.Page + 1,
                 PageSize = state.PageSize,
                 IsActive = Status == "Active"
             };
-        data = await GetAllBrand(BrandRequest);
+
+        BrandVM.data = await BrandVM.GetAllBrand(BrandRequest);
+
         await Task.Delay(300, token);
-        var totalItems = data.TotalNoOfRecords;
-        return new TableData<GetBrandResponse>() { TotalItems = totalItems, Items = data.Items };
+
+        var totalItems = BrandVM.data.TotalNoOfRecords;
+
+        return new TableData<GetBrandResponse>() { TotalItems = totalItems, Items = BrandVM.data.Items };
     }
 
-    [Inject]
-    public IBrandApi _brandApi { get; set; }
+ 
 
     private void OnSearch(string text)
     {
-        searchString = text;
+        BrandVM.searchString = text;
         table.ReloadServerData();
     }
 
-    protected async Task<PaginationModel<GetBrandResponse>> GetAllBrand(GetBrandRequest request)
+  
+
+    protected Task OpenEditDialog(int id, string brandName, string image)
     {
-        isOkResponse = false;
+        
+        BrandVM.BrandLogoPreview = image;
+        BrandVM.BrandId = id;
+        BrandVM.BrandName = brandName;
 
-        var result = await _brandApi.GetAllBrand(request);
-
-        if (result.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            isOkResponse = true;
-            return result.Data;
-        }
-        else
-        {
-            isOkResponse = false;
-            return null;
-        }
-    }
-
-    protected Task OpenEditDialog(int id)
-    {
         var parameters = new DialogParameters<EditBrand>
         {
-            { "BrandId",id},
+            { "BrandVM",BrandVM},
             {"OnUpdated",EventCallback.Factory.Create<bool>(this,ReloadTable) }
         };
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
@@ -128,24 +144,22 @@
         return DialogService.ShowAsync<DeleteDialog>("Active/Inactive Confirmation", parameters, options);
     }
 
-    private async Task ReloadTable(bool isSuccess) {
+    private async Task ReloadTable(bool isSuccess)
+    {
         if (isSuccess)
-            table.ReloadServerData();
+            await table.ReloadServerData();
     }
+
+
     private async Task ConfirmDelete(int id)
     {
-        if (id != 0)
+        var isDeleted =await BrandVM.DeleteBrand(id);
+        if (isDeleted)
         {
-
-            var result = await _brandApi.DeleteBrandAsync(id);
-            if (result.Data)
-            {
-                var RemoveData = data.Items.FirstOrDefault(x => x.BrandId == id);
-                data.Items.Remove(RemoveData);
                 StateHasChanged();
-                await OnCountChange.InvokeAsync();
-            }
+                await OnCountChange.InvokeAsync();   
         }
-
     }
+
+   
 }

@@ -4,6 +4,7 @@ using BikeStore.Application.CQRS.Commands.StoreCommand;
 using BikeStore.Application.CQRS.Queries.StoreQueries;
 using BikeStore.Domain.DTO;
 using BikeStore.Domain.DTO.Request.StoreRequest;
+using BikeStore.Domain.DTO.Response.LookupResponse;
 using BikeStore.Domain.DTO.Response.StoreResponse;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +22,9 @@ namespace BikeStore.Api.Controllers
         {
             this._mediator = mediator;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAllStore([FromQuery]GetStoreRequest request)
+        
+        [HttpPost]
+        public async Task<IActionResult> GetAllStoreAsync([FromBody]GetStoreRequest request)
         {
 
             var result = await _mediator.Send(new GetStoreQuery(request));
@@ -38,10 +40,8 @@ namespace BikeStore.Api.Controllers
        
         }
 
-
-
         [HttpPost("CreateStore")]
-        public async Task<IActionResult> AddNewStore(CreateStoreRequest request)
+        public async Task<IActionResult> AddNewStoreAsync(CreateStoreRequest request)
         {
             var result = await _mediator.Send(new CreateStoreCommand(request));
             if (result != null)
@@ -55,11 +55,54 @@ namespace BikeStore.Api.Controllers
 
         }
 
+        [HttpPut("UpdateStore/{id:int}")]
+        public async Task<IActionResult> UpdateStoreAsync(int id,[FromBody]UpdateStoreRequest request)
+        {
+            var result = await _mediator.Send(new UpdateStoreCommand(request));
+            if (result != null)
+            {
+                return Ok(ApiResponse<UpdateStoreResponse>.Success(message: AppConstant.UPDATED_SUCCESS, HttpStatusCode.OK, result));
+            }
+            else
+            {
+                return Ok(ApiResponse<UpdateStoreResponse>.Error(message: AppConstant.UPDATE_FAILED, HttpStatusCode.BadRequest));
+            }
 
+        }
 
+        [HttpGet("GetStoreDropdown")]
+        public async Task<IActionResult> GetStoreDropdownAsync()
+        {
+            var result = await _mediator.Send(new GetStoreDropdownQuery());
+
+            if (result != null)
+            {
+                return Ok(ApiResponse<List<GetDropdownResponse>>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
+            }
+            else
+            {
+                return Ok(ApiResponse<List<GetDropdownResponse>>.Error(message: AppConstant.BADREQUEST, HttpStatusCode.BadRequest));
+            }
+
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetStoreByIdAsync(int id)
+        {
+            var result = await _mediator.Send(new GetStoreByIdQuery(id));
+            if (result != null)
+            {
+                return Ok(ApiResponse<UpdateStoreResponse>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
+            }
+            else
+            {
+                return Ok(ApiResponse<UpdateStoreResponse>.Error(message: AppConstant.UPDATE_FAILED, HttpStatusCode.BadRequest));
+            }
+
+        }
 
         [HttpDelete("DeleteStore/{id:int}")]
-        public async Task<IActionResult> DeleteStore(int id)
+        public async Task<IActionResult> DeleteStoreAsync(int id)
         {
             var result = await _mediator.Send(new DeleteStoreCommand(id));
             if (result)

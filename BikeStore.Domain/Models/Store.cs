@@ -22,6 +22,7 @@ public partial class Store
 
     public string? ZipCode { get; set; }
 
+    public bool? IsActive { get; set; }
     
 
     public virtual ICollection<RepairService> RepairServices { get; set; } = new List<RepairService>();

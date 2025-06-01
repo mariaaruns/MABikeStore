@@ -15,11 +15,12 @@ using Mapster;
 using BikeStore.Domain.DTO;
 using BikeStore.Domain.DTO.Request.BrandRequest;
 using BikeStore.Domain.Contracts.IService;
+using BikeStore.Application.Common;
 
 namespace BikeStore.Application.CQRS.Queries.BrandQueries
 {
 
-    public record GetBrandQuery(GetBrandRequest Request) : IQuery<PaginationModel<GetBrandResponse>>;
+    public record GetBrandQuery(GetBrandRequest Request,string uploadFolderPath) : IQuery<PaginationModel<GetBrandResponse>>;
 
     public class GetBrandHandler : IQueryHandler<GetBrandQuery, PaginationModel<GetBrandResponse>>
     {
@@ -37,13 +38,17 @@ namespace BikeStore.Application.CQRS.Queries.BrandQueries
         {
             var source = await _unitOfWork.BrandRepository.GetAllAsync();
 
-            source = source.Where(x => 
+                source = source.Where(x => 
             (string.IsNullOrEmpty(query.Request.BrandFilter)|| x.BrandName.Contains(query.Request.BrandFilter))
             &&
             (query.Request.IsActive==null || x.IsActive== query.Request.IsActive)
-            );
-
-        /*    if (query.Request.IsActive != true)
+            ).Select(x=>new Brand { 
+                BrandId= x.BrandId,BrandName=x.BrandName,
+                Logo=$"{AppConstant.BrandUploadPath}{x.Logo}"
+            
+            });
+            
+            /*    if (query.Request.IsActive != true)
             { 
             
             }
@@ -51,6 +56,7 @@ namespace BikeStore.Application.CQRS.Queries.BrandQueries
             {
                 source = source.Where(x => x.BrandName.Contains(query.Request.BrandFilter));
             }*/
+
             if (query.Request.SortOption != null)
             {
                 source = query.Request.SortOption.Equals("Desc", StringComparison.OrdinalIgnoreCase) ? source.OrderByDescending(x => x.BrandName) : source.OrderBy(x => x.BrandName);

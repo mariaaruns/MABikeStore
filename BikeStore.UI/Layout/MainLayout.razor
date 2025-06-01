@@ -1,33 +1,50 @@
 ﻿@inherits LayoutComponentBase
-@using Microsoft.AspNetCore.Components.Sections
-@* <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
- *@
-
+@inject SpinnerService _spinnerService
+@inject NavigationManager _nav
 <MudThemeProvider />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-
 <style>
+    .spinner-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
 
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #ccc;
+        border-top-color: #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
 </style>
 
 <MudLayout>
-    <MudAppBar  >
+
+    <MudAppBar>
         <MudIconButton Icon="@Icons.Material.Filled.ViewSidebar" Color="Color.Inherit"  Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" /> 
         <BikeStore.UI.Components.StoreDropdown />
         <MudSpacer />
@@ -37,41 +54,81 @@
         <MudSpacer />
         <BikeStore.UI.Components.AuthLinks/>
     </MudAppBar >
-    <MudDrawer OpenChanged="DrawerToggle" @ref="mudDrawer" OpenMiniOnHover="true" Variant="DrawerVariant.Mini" Open="_drawerOpen" Overlay="true" OverlayAutoClose="true">
-        <NavMenu UserName="@userName" />
+
+    <MudDrawer OpenChanged="DrawerToggle" @ref="mudDrawer" OpenMiniOnHover="true" Variant="DrawerVariant.Mini" Open="_drawerOpen">
+        <NavMenu _maxWidth="@_sideBarwidth"/>
     </MudDrawer>
 
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+
+            @if (isLoading)
+            {
+                <div class="spinner-overlay">
+                    <div class="spinner"></div>
+                </div>
+            }
+
             @Body
         </MudContainer>
     </MudMainContent>
 
 </MudLayout>
 
-
 @code {
     bool _drawerOpen = !true;
-    private string userName { get; set; } = string.Empty;
     private MudDrawer mudDrawer;
-
+    public string _sideBarwidth { get; set; }="0px";
     public void  DrawerToggle()
     {
         if (mudDrawer.Breakpoint == Breakpoint.Xs)
         {
-            mudDrawer.Variant = DrawerVariant.Temporary;
+            mudDrawer.Variant = DrawerVariant.Persistent;
         }
         _drawerOpen = !_drawerOpen;
-       
-        if (_drawerOpen == true)
+
+        if (!_drawerOpen)
         {
-            userName = "Maria Arun";
-            
+            _sideBarwidth = "50px";
         }
-        else
-        {
-            userName = "";
+        else { 
+            _sideBarwidth = null;
         }
-     
+
     }
+
+
+    private bool isLoading = false;
+
+    protected override void OnInitialized()
+    {
+        _spinnerService.OnShow += ShowSpinner;
+        _spinnerService.OnHide += HideSpinner;
+     
+        _nav.LocationChanged += async (sender, args) =>
+        {
+            _spinnerService.Show();
+            await Task.Delay(1000);
+            _spinnerService.Hide();
+        };
+    }
+
+    private void ShowSpinner()
+    {
+        isLoading = true;
+        StateHasChanged();
+    }
+
+    private void HideSpinner()
+    {
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _spinnerService.OnShow -= ShowSpinner;
+        _spinnerService.OnHide -= HideSpinner;
+    }
+
 }

@@ -14,18 +14,21 @@ using BikeStore.Application.CQRS.Queries.ProductQueries;
 using Microsoft.AspNetCore.Hosting;
 using BikeStore.Application.CQRS.Commands.ProductCommand;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Azure.Core;
 
 namespace BikeStore.Api.Controllers
 {
     [Route("api/[controller]")]
+    
     [ApiController]
+
     public class ProductController(IMediator mediator,IWebHostEnvironment enviroment) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
         private readonly IWebHostEnvironment _enviroment = enviroment;
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllProducts([FromQuery] GetProductRequest request)
+        [HttpPost]
+        public async Task<IActionResult> GetAllProductsAsync([FromBody] GetProductRequest request)
         {
             var result = await _mediator.Send(new GetProductQuery(request));
             if (result is null)
@@ -36,8 +39,8 @@ namespace BikeStore.Api.Controllers
             return Ok(ApiResponse<PaginationModel<GetProductResponse>>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateProduct( [FromForm] CreateProductRequest request)
+        [HttpPost("CreateProduct")]
+        public async Task<IActionResult> CreateProductAsync( [FromForm] CreateProductRequest request)
         {
             var uploadsFolderPath = Path.Combine(_enviroment.WebRootPath, "Assets", "Uploads", "Products");
             var result = await _mediator.Send(new CreateProductCommand(request, uploadsFolderPath));
@@ -50,9 +53,8 @@ namespace BikeStore.Api.Controllers
             return Ok(ApiResponse<GetProductResponse>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
         }
 
-
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> UpdateProduct(int Id,[FromForm]UpdateProductRequest request) 
+        public async Task<IActionResult> UpdateProductAsync(int Id,[FromForm]UpdateProductRequest request) 
         {
             if (Id != request.ProductId) 
             {
@@ -70,7 +72,7 @@ namespace BikeStore.Api.Controllers
         }
 
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> GetProductDetailById(int Id)
+        public async Task<IActionResult> GetProductDetailByIdAsync(int Id)
         {
             if (Id <= 0) {
                 return Ok(ApiResponse<PaginationModel<GetProductResponse>>.Error(message: AppConstant.RECORDS_NOT_FOUND, HttpStatusCode.BadRequest));
@@ -85,7 +87,7 @@ namespace BikeStore.Api.Controllers
         }
 
         [HttpDelete("{Id:int}")]
-        public async Task<IActionResult> DeleteProductById(int Id)
+        public async Task<IActionResult> DeleteProductByIdAsync(int Id)
         {
             if (Id <= 0)
             {
@@ -101,5 +103,16 @@ namespace BikeStore.Api.Controllers
             return Ok(ApiResponse<bool>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
         }
 
+        [HttpGet("GetProductCount")]
+        public async Task<IActionResult> GetProductCountAsync() 
+        {
+            var result = await _mediator.Send(new GetProductCountQuery());
+            if (result is null)
+            {
+                return Ok(ApiResponse<GetProductCountResponse>.Error(message: AppConstant.RECORDS_NOT_FOUND, HttpStatusCode.OK));
+            }
+
+            return Ok(ApiResponse<GetProductCountResponse>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace BikeStore.Application.CQRS.Commands.CategoryCommand
         }
         public async Task<GetCategoryResposne> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
         {
+            
             var Entity = command.command.Adapt<Category>();
             
             var result = await _unitOfWork.CategoryRepository.CreateAsync(Entity);

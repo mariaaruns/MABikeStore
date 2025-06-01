@@ -11,6 +11,9 @@ namespace BikeStore.Domain.Contracts.IRepository
     public interface IProductRepository:IGenericRepository<Product>
     {
         Task<Product> UpdateProductAsync(Product product);
+        
         Task<IQueryable<Product>> GetProductListAsync();
+
+        Task<GetProductCountResponse> GetProductCountAsync();
     }
 }

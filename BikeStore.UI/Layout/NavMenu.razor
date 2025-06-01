@@ -1,19 +1,15 @@
 ﻿
 
-<MudPaper   Elevation="1" >
-    <MudStack AlignItems="AlignItems.Center" Justify="Justify.FlexEnd" Class="m-3">
-        <MudTooltip Text="Maria arun">
-            <MudAvatar Size="Size.Medium" Color="Color.Success">A</MudAvatar>
-            <label>@UserName</label>
+<MudPaper Elevation="0" MinWidth="50px" MaxWidth="@_maxWidth">
+    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="mb-3">
+        <MudTooltip>
+            <MudAvatar Size="Size.Medium" Color="Color.Success">MA</MudAvatar>
         </MudTooltip>
     </MudStack>
-    <MudNavMenu Rounded="true" Bordered="true" Margin="Margin.Normal"  Style="padding-right:10px"  Color="Color.Primary">
-        @*   <MudNavLink Href="/Logout" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink> *@
-
-        @* <MudDivider  DividerType="DividerType.FullWidth" Style="border-width:2px;border-style:solid;border-color:green"  /> *@
-
-        <MudNavLink  Match="NavLinkMatch.All" Href="/" Icon="@Icons.Material.Filled.Dashboard"> Dashboard</MudNavLink>
-        <MudNavLink  Href="/Brand" Icon="@Icons.Material.Filled.Menu"> Brands</MudNavLink>
+    <MudDivider/>
+    <MudNavMenu Rounded="true" Dense="false"  Bordered="true" Color="Color.Primary">
+        <MudNavLink  Match="NavLinkMatch.All" Href="/"  Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink  Href="/Brand" Icon="@Icons.Material.Filled.Menu">Brands</MudNavLink>
         <MudNavLink  Href="/Category" Icon="@Icons.Material.Filled.Category"> Categories</MudNavLink>
         <MudNavLink Href="/Product" Icon="@Icons.Material.Filled.ProductionQuantityLimits">Products</MudNavLink>
         <MudNavLink Href="/Store" Icon="@Icons.Material.Filled.Store">Stores</MudNavLink>
@@ -22,10 +18,11 @@
         <MudNavLink Href="/Report" Icon="@Icons.Material.Filled.DocumentScanner">Reports</MudNavLink>
         <MudNavLink Href="/Staff" Icon="@Icons.Material.Filled.People">Employees</MudNavLink>
         <MudNavLink Href="/Repair" Icon="@Icons.Material.Filled.TireRepair">Repair Service</MudNavLink>
-       @*  <MudNavLink Href="/UserControl" Icon="@Icons.Material.Filled.AdminPanelSettings">User Contorl</MudNavLink> *@
+        @*  <MudNavLink Href="/UserControl" Icon="@Icons.Material.Filled.AdminPanelSettings">User Contorl</MudNavLink> *@
 
-        <MudNavGroup   Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="false" >
-            <MudNavLink Href="/UserControl" Icon="@Icons.Material.Filled.Security" IconColor="Color.Info">User Security</MudNavLink>
+        <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings"  Expanded="false" >
+            <MudNavLink   Href="/Usermanagement" Icon="@Icons.Material.Filled.Security" IconColor="Color.Info">User management</MudNavLink>
+            <MudNavLink Href="/RegisterUser" Icon="@Icons.Material.Filled.PersonAddAlt1" IconColor="Color.Info">Register user</MudNavLink>
         </MudNavGroup>
 
 
@@ -35,6 +32,5 @@
 
 @code{
     [Parameter]
-    public string UserName { get; set; } = string.Empty;
-
+    public string? _maxWidth { get; set; } = null;
 }

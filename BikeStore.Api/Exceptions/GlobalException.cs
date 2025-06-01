@@ -9,8 +9,7 @@ namespace BikeStore.Api.Exceptions
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            //var problemDetails = new ProblemDetails();
-            //problemDetails.Instance = httpContext.Request.Path;
+         
             var endpoint = httpContext.Request.Path;
             
             Dictionary<string, object> ErrorDetail = new Dictionary<string, object>();
@@ -21,22 +20,22 @@ namespace BikeStore.Api.Exceptions
             if (exception is FluentValidation.ValidationException fluentException)
             {
                 
-
-                //problemDetails.Title = "one or more validation errors occurred.";
-                //problemDetails.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1";
-                //httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 List<string> validationErrors = new List<string>();
-                foreach (var error in fluentException.Errors)
-                {                   
-                    validationErrors.Add(error.ErrorMessage);
+                if (fluentException.Errors != null && fluentException.Errors.Any())
+                {
+                    foreach (var error in fluentException.Errors)
+                    {
+                        validationErrors.Add(error.ErrorMessage);
+                    }
                 }
-                ///           problemDetails.Extensions.Add("errors", validationErrors);
-                ///           
+                else if (!string.IsNullOrWhiteSpace(fluentException.Message))
+                {
+                    validationErrors.Add(fluentException.Message);
+                }
+
+
                 ErrorDetail.Add("Instance", endpoint);
                 ErrorDetail.Add("InnerException",exception.InnerException);
-              
-
-
                 _response.Metadata = ErrorDetail;
                 _response.Message = "one or more validation errors occurred.";
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -44,17 +43,13 @@ namespace BikeStore.Api.Exceptions
             }
 
             else
-            {
-                //problemDetails.Title = exception.Message;
-                
+            { 
                 ErrorDetail.Add("InnerException", exception.InnerException);
                 ErrorDetail.Add("StackTrace", exception.StackTrace);
                 ErrorDetail.Add("Instance", endpoint);
-
                 _response.Message = exception.Message;
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.Metadata = ErrorDetail;
-
             }
 
             logger.LogError("{ProblemDetailsTitle}", _response.Message);

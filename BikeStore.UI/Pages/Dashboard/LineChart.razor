@@ -1,0 +1,16 @@
+﻿<MudPaper Class="doc-section-component-container">
+    <MudChart  ChartType="ChartType.Bar" ChartSeries="@_series" @bind-SelectedIndex="_index" Width="100%"  XAxisLabels="@_xAxisLabels" ></MudChart>
+</MudPaper>
+
+
+@code {
+    private int _index = -1;    
+
+    private List<ChartSeries> _series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15,10,56,47 } },
+        new ChartSeries() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31,47, 31,47 } },
+        new ChartSeries() { Name = "Sweden", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 , 31,47,78} },
+    };
+    private string[] _xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep","Oct","Nov","Dec"};
+}

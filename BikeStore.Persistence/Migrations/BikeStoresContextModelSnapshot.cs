@@ -233,40 +233,6 @@ namespace BikeStore.Persistence.Migrations
                     b.HasKey("LookupId");
 
                     b.ToTable("Lookup");
-
-                    b.HasData(
-                        new
-                        {
-                            LookupId = 1,
-                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8646),
-                            IsActive = true,
-                            LookupName = "Order Status",
-                            LookupValue = "Order Placed"
-                        },
-                        new
-                        {
-                            LookupId = 2,
-                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8684),
-                            IsActive = true,
-                            LookupName = "Order Status",
-                            LookupValue = "In Progress"
-                        },
-                        new
-                        {
-                            LookupId = 3,
-                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8688),
-                            IsActive = true,
-                            LookupName = "Order Status",
-                            LookupValue = "Ready for Pickup/Delivery"
-                        },
-                        new
-                        {
-                            LookupId = 4,
-                            CreatedDate = new DateTime(2025, 3, 1, 13, 47, 20, 162, DateTimeKind.Local).AddTicks(8692),
-                            IsActive = true,
-                            LookupName = "Order Status",
-                            LookupValue = "Completed"
-                        });
                 });
 
             modelBuilder.Entity("BikeStore.Domain.Models.Order", b =>
@@ -422,9 +388,6 @@ namespace BikeStore.Persistence.Migrations
                     b.Property<string>("Image")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
 
                     b.Property<decimal>("ListPrice")
                         .HasColumnType("decimal(10, 2)")

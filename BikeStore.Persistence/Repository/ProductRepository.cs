@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BikeStore.Domain.DTO.Response.ProductResponse;
+using BikeStore.Domain.DTO.Response.CategoryResponse;
 
 namespace BikeStore.Persistence.Repository
 {
@@ -15,6 +17,20 @@ namespace BikeStore.Persistence.Repository
         public ProductRepository(BikeStoresContext dbContext) : base(dbContext)
         {
 
+        }
+
+        public async Task<GetProductCountResponse> GetProductCountAsync()
+        {
+            var countData = await _dbContext.Products
+        .GroupBy(x => 1)
+        .Select(g => new GetProductCountResponse
+        {
+            ActiveProductCount = g.Count(x => x.IsActive!=false),
+            InactiveProductCount = g.Count(x => x.IsActive ==false)
+        })
+        .FirstOrDefaultAsync();
+        
+            return countData;
         }
 
         public async Task<IQueryable<Product>> GetProductListAsync()

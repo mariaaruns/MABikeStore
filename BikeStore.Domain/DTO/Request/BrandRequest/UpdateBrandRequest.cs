@@ -11,8 +11,7 @@ namespace BikeStore.Domain.DTO.Request.BrandRequest
     {
         public int BrandId { get; set; }
         public string? BrandName { get; set; }
-
-        public IFormFile? Logo { get; set; }
-        public string? LogoImageBase64String { get; set; }
+        public byte[]? ImageBytes { get; set; }
+        public string? FileName { get; set; }
     }
 }

@@ -47,6 +47,7 @@ namespace BikeStore.Persistence.Repository
             }
         }
 
+
         public async Task<GetBrandCount> GetBrandCountAsync()
         {
             var countData = await _dbContext.Brands
@@ -72,6 +73,7 @@ namespace BikeStore.Persistence.Repository
             return result;
         }
 
+        
 
     }
 }

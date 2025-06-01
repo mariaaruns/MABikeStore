@@ -3,6 +3,7 @@ using BikeStore.Domain.Contracts;
 using BikeStore.Domain.Contracts.IService;
 using BikeStore.Domain.DTO.Request.BrandRequest;
 using BikeStore.Domain.DTO.Response.BrandResponse;
+using BikeStore.Domain.Models;
 using FluentValidation;
 using Mapster;
 using MediatR;
@@ -29,32 +30,47 @@ namespace BikeStore.Application.CQRS.Commands.BrandCommand
             this._fileService = fileService;
         }
 
+       
         public async Task<CreateBrandResponse> Handle(CreateBrandcommand request, CancellationToken cancellationToken)
         {
-            if (request.request.LogoImage!=null) 
+            var brand = new Brand();
+            if (request.request.ImageBytes!=null && !string.IsNullOrEmpty(request.request.FileName)) 
             {
-                var fileaPath = await _fileService.SaveFileAsync(request.request.LogoImage,request.ImagePath);
-                request.request.Logo = fileaPath;
+                var filePath = await _fileService.SaveFileAsync(request.request.ImageBytes, request.request.FileName, request.ImagePath);
+                brand.Logo = filePath;
             }
-            var MappingBrand = request.request.Adapt<Brands.Brand>();
-            var Entity=await unitOfWork.BrandRepository.CreateAsync(MappingBrand);
-            await unitOfWork.SaveAsync();
 
+            brand.BrandName = request.request.BrandName;
+            brand.IsActive = true;
+            var Entity=await unitOfWork.BrandRepository.CreateAsync(brand);
+            await unitOfWork.SaveAsync();
             var MapResponse = Entity.Adapt<CreateBrandResponse>();
             return MapResponse;
         }
+
+       
     }
 
 
     //fluent Validation
     public class CreateBrandValidator : AbstractValidator<CreateBrandcommand> 
     {
-        public CreateBrandValidator()
+        private readonly IUnitOfWork _unitOfWork;
+        public CreateBrandValidator(IUnitOfWork unitOfWork)
         {
-            RuleFor(x => x.request.BrandName).NotEmpty();
-            //RuleFor(x => x.request.Logo).NotEmpty();
+            _unitOfWork = unitOfWork;
+
+            RuleFor(x => x.request.BrandName)
+                .NotEmpty().MustAsync(BrandNameUnique).WithMessage("Brand name already exists");
+            
         }
-    
+
+        private async Task<bool> BrandNameUnique(string brandName, CancellationToken cancellationToken)
+        {
+            var exists = await _unitOfWork.BrandRepository.ExistAsync(b => b.BrandName == brandName);
+            return !exists;
+        }
+
     }
 
 }

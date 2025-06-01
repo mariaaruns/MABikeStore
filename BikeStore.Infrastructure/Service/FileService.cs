@@ -40,16 +40,16 @@ namespace BikeStore.Infrastructure.Service
             return false ;
         }
 
-        public async Task<string> SaveFileAsync(IFormFile file, string folderPath)
+        public async Task<string> SaveFileAsync(byte[] fileBytes,string fileName, string folderPath)
         {
-            if (file.Length > 0)
+            if (fileBytes.Length > 0)
             {
-                var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+                var uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
                 var filePath = Path.Combine(folderPath, uniqueFileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await file.CopyToAsync(stream);
+                    await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
                 }
 
                 return uniqueFileName;

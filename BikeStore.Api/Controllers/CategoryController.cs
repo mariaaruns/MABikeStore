@@ -18,8 +18,8 @@ namespace BikeStore.Api.Controllers
     {
         private readonly IMediator _mediator = mediator;
 
-        [HttpGet("Category")]
-        public async Task<IActionResult> GetAllCategories([FromQuery ]GetCategoryRequest request)
+        [HttpPost("GetCategory")]
+        public async Task<IActionResult> GetAllCategories([FromBody]GetCategoryRequest request)
         {
             var result = await _mediator.Send(new GetCategoryQuery(request));
             if (result is null)
@@ -29,6 +29,22 @@ namespace BikeStore.Api.Controllers
 
             return Ok(ApiResponse<PaginationModel<GetCategoryResposne>>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
         }
+
+
+
+        [HttpGet("CategoryCount")]
+        public async Task<IActionResult> GetCategoriesCountAsync()
+        {
+            var result = await _mediator.Send(new GetCategoryCountQuery());
+            if (result is null)
+            {
+                return Ok(ApiResponse<GetCategoryCountResponse>.Error(message: AppConstant.RECORDS_NOT_FOUND, HttpStatusCode.OK));
+            }
+
+            return Ok(ApiResponse<GetCategoryCountResponse>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
+        }
+
+
 
         [HttpPost("Category")]
         public async Task<IActionResult> AddCategory(CreateCategoryRequest request)
@@ -62,20 +78,21 @@ namespace BikeStore.Api.Controllers
             return Ok(ApiResponse<GetCategoryResposne>.Success(message: AppConstant.SUCCESS, HttpStatusCode.OK, result));
         }
 
+
         [HttpDelete("Delete/{id:int}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            if (id != 0)
+            if (id == 0)
             {
-                return Ok(ApiResponse<GetCategoryResposne>.Error(message: AppConstant.BADREQUEST, HttpStatusCode.OK));
+                return Ok(ApiResponse<bool>.Error(message: AppConstant.BADREQUEST, HttpStatusCode.BadRequest));
             }
             var IsSuccess = await _mediator.Send(new DeleteCategoryCommand(id));
 
             if (!IsSuccess)
             {
-                return Ok(ApiResponse<GetCategoryResposne>.Error(message: AppConstant.BADREQUEST, HttpStatusCode.OK));
+                return Ok(ApiResponse<bool>.Error(message: AppConstant.BADREQUEST, HttpStatusCode.BadRequest));
             }
-            return Ok(ApiResponse<GetCategoryResposne>.Success(message: AppConstant.DELETED_SUCCESS, HttpStatusCode.OK));
+            return Ok(ApiResponse<bool>.Success(message: AppConstant.DELETED_SUCCESS,HttpStatusCode.OK, IsSuccess));
         }
     }
 }

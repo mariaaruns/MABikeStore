@@ -32,6 +32,11 @@ namespace BikeStore.Persistence.Repository
             await Task.CompletedTask;
         }
 
+        public async Task<bool> ExistAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbContext.Set<T>().AnyAsync(predicate);
+        }
+
         public async Task<IQueryable<T>> GetAllAsync()
         {
              var result=  _dbContext.Set<T>().AsNoTracking().AsQueryable();

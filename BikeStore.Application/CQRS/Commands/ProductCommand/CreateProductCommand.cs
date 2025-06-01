@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 
 namespace BikeStore.Application.CQRS.Commands.ProductCommand
 {
-    public record CreateProductCommand(CreateProductRequest Command,string ImagePath) : ICommand<GetProductResponse>;
+    public record CreateProductCommand(CreateProductRequest Command, string ImagePath) : ICommand<GetProductResponse>;
 
     public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, GetProductResponse>
     {
-        private readonly IUnitOfWork  _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFileService _fileService;
 
-        public CreateProductCommandHandler(IUnitOfWork unitOfwork,IFileService fileService)
+        public CreateProductCommandHandler(IUnitOfWork unitOfwork, IFileService fileService)
         {
             this._unitOfWork = unitOfwork;
             this._fileService = fileService;
@@ -29,15 +29,16 @@ namespace BikeStore.Application.CQRS.Commands.ProductCommand
         public async Task<GetProductResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             if (request.Command.ImageFile != null)
-            {
+            {/*
                 var newImageName = await _fileService.SaveFileAsync(request.Command.ImageFile, request.ImagePath);
-                request.Command.Image = newImageName;
+                request.Command.Image = newImageName;*/
             }
-            
+
             var ProductEntity = request.Command.Adapt<Product>();
             var result = await _unitOfWork.ProductRepository.CreateAsync(ProductEntity);
 
-            if (result is not null) {
+            if (result is not null)
+            {
 
                 List<Stock> stockList = new List<Stock>();
 
@@ -59,14 +60,13 @@ namespace BikeStore.Application.CQRS.Commands.ProductCommand
                 var StockEnitity = await _unitOfWork.stockRepository.AddNewStock(stockList);
 
                 bool isSuccess = await _unitOfWork.SaveAsync();
-             
-                if (isSuccess)
-                {
-                    return result.Adapt<GetProductResponse>(); ;
-                }
 
+                if (!isSuccess)
+                {
+                    throw new FluentValidation.ValidationException("Product Created Successfully,but Stock was not created. Contact Developer team!");
+                }
+                return result.Adapt<GetProductResponse>();
             }
-            
             return default!;
         }
     }

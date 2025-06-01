@@ -1,0 +1,62 @@
+﻿@using BikeStore.Domain.DTO.Request.CategoryRequest
+@using BikeStore.UI.AppConstant
+@using BikeStore.UI.Contracts.Interface
+@using System.Text.Json
+@using System.Text
+@using BikeStore.UI.ViewModel
+
+
+<MudDialog Class="width blur dialog-background" TitleClass="blur dialog-background-title" ContentClass="dialog-background-surface py-10" ActionsClass="dialog-background-surface">
+    <DialogContent>
+        <MudForm>
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="CategoryVM.CategoryName" Label="Category Name" Variant="Variant.Filled"></MudTextField>
+                    <ValidationMessage For="@(() => CategoryVM.CategoryName)" />
+                </MudItem>
+
+            </MudGrid>
+        </MudForm>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SubmitAsync">Update</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnUpdated { get; set; }
+
+    [Parameter]
+    public CategoryViewModel CategoryVM { get; set; }
+
+   
+    public UpdateCategoryRequest request = new();
+    
+
+
+    public async Task SubmitAsync()
+    {
+        var isSuccessfullyUpsert = await CategoryVM.SubmitAsync();
+
+        if (OnUpdated.HasDelegate && isSuccessfullyUpsert)
+        {
+            await OnUpdated.InvokeAsync(isSuccessfullyUpsert);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+ 
+   
+
+}

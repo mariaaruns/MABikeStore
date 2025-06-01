@@ -109,13 +109,13 @@ public partial class BikeStoresContext : IdentityDbContext<ApplicationUser, Appl
            .OnDelete(DeleteBehavior.NoAction);
         });
 
-        modelBuilder.Entity<Lookup>().HasData(
+       /* modelBuilder.Entity<Lookup>().HasData(
         new Lookup { LookupId = 1, LookupName = "Order Status", LookupValue = "Order Placed", CreatedDate = DateTime.Now, IsActive = true },
         new Lookup { LookupId = 2, LookupName = "Order Status", LookupValue = "In Progress", CreatedDate = DateTime.Now, IsActive = true },
         new Lookup { LookupId = 3, LookupName = "Order Status", LookupValue = "Ready for Pickup/Delivery", CreatedDate = DateTime.Now, IsActive = true },
         new Lookup { LookupId = 4, LookupName = "Order Status", LookupValue = "Completed", CreatedDate = DateTime.Now, IsActive = true }
 
-        );
+        );*/
 
         modelBuilder.Entity<Brand>(entity =>
         {

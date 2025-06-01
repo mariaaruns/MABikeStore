@@ -1,54 +1,42 @@
 ﻿@using BikeStore.Domain.DTO.Request.BrandRequest
+@using BikeStore.UI.AppConstant
 @using BikeStore.UI.Contracts.Interface
 @using System.Text.Json
 @using System.Text
+@using BikeStore.UI.ViewModel
 
 
 <MudDialog   Class="width blur dialog-background" TitleClass="blur dialog-background-title" ContentClass="dialog-background-surface py-10" ActionsClass="dialog-background-surface">
     <DialogContent>
         <MudForm >
-        <MudGrid  Justify="Justify.Center" >
+            <MudGrid  Justify="Justify.Center" >
 
-            <MudItem Class="d-flex align-center justify-center mud-width-full py-4" xs="12">
-                @if (!string.IsNullOrEmpty(BrandLogoPreview))
-                {
-                    <MudAvatar Size="Size.Large" Color="Color.Primary">
-                        <MudImage Src="@BrandLogoPreview" />
-                    </MudAvatar>
-                    @* <img src="@BrandLogoPreview" alt="Selected Image" style="max-width: 100px; max-height: 100px; border: 1px solid #ccc;" /> *@
-                }
-                else
-                {
-                    <MudAvatar Size="Size.Large" Color="Color.Primary">
+                <MudItem Class="d-flex align-center justify-center mud-width-full py-4" xs="12">
+                    @if (!string.IsNullOrEmpty(BrandVM.BrandLogoPreview))
+                    {
+                        <MudAvatar Size="Size.Large" Color="Color.Primary">
+                            <MudImage Src="@BrandVM.BrandLogoPreview" />
+                        </MudAvatar>
 
-                        <img src="~/uploads/images/logo-com-hr-logo-5636a4d2d5-seeklogo.com.png" />
-                        @* <MudImage src="~/uploads/images/logo-com-hr-logo-5636a4d2d5-seeklogo.com.png" /> *@
-                    </MudAvatar>
-                    @* <img src="" alt="Preview Image" style="width: 100px; height: 100px; background-color:darkgrey;   border: 10px solid #ccc;" /> *@
-                }
-            </MudItem>
+                    }
+                    else
+                    {
+                        <MudAvatar Size="Size.Large" Color="Color.Primary">
+                        </MudAvatar>
 
-            <MudItem>
-                @if (_files!=null)
-                {
-                    <MudFab Color="Color.Secondary" Size="Size.Small" OnClick="ClearAttachments" StartIcon="@Icons.Material.Filled.RemoveFromQueue" />
-                }
-                else
-                {
-                    <MudFileUpload T="IBrowserFile" Class="ms-1" FilesChanged="UploadFiles">
-                        <ActivatorContent>
-                            <MudFab Color="Color.Success" Size="Size.Small" StartIcon="@Icons.Material.Filled.AttachFile" />
-                        </ActivatorContent>
-                    </MudFileUpload>
-                }
+                    }
+                </MudItem>
 
-            </MudItem>
+                <MudItem>
+                    <InputFile OnChange="HandleFileSelected" />
 
-            <MudItem xs="12" >
-                <MudTextField @bind-Value="BrandName" Label="Brand Name" Variant="Variant.Filled"></MudTextField>
-            </MudItem>
+                </MudItem>
 
-        </MudGrid>
+                <MudItem xs="12" >
+                    <MudTextField @bind-Value="BrandVM.BrandName" Label="Brand Name" Variant="Variant.Filled"></MudTextField>
+                </MudItem>
+
+            </MudGrid>
         </MudForm>
 
     </DialogContent>
@@ -74,112 +62,63 @@
     [Parameter]
     public EventCallback<bool> OnUpdated { get; set; }
 
+    // [Parameter]
+    // public int BrandId { get; set; }
+    // [Parameter]
+    // public string BrandName { get; set; }
+    // [Parameter]
+    // public string BrandLogoPreview { get; set; }
     [Parameter]
-    public int BrandId { get; set; }
-    public string BrandName { get; set; }
-    public string BrandLogoPreview { get; set; }
-    public UpdateBrandRequest request = new();
-    public string base64String = string.Empty;
-    IBrowserFile? _files;
+    public BrandViewModel BrandVM { get; set; }
+   
+    // private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    // {
+    //     ClearAttachments();
+    //     BrandVM._files = e.File;
+    //     BrandVM.ImageBytes = await BrandVM._files.ConvertToByteArrayAsync();
+    //     BrandVM.base64String = Convert.ToBase64String(BrandVM.ImageBytes);
+    //     BrandVM.BrandLogoPreview = $"data:{BrandVM._files.ContentType};base64,{ BrandVM.base64String}";
 
-
-
-    [Inject]
-    public IBrandApi _brandApi { get; set; }
-
-    protected override async Task OnParametersSetAsync()
+    // }
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        if (BrandId != 0)
-        {
-            await GetBrandDetails(BrandId);
-        }
-        StateHasChanged();
+        await BrandVM.SetImageAsync(e.File); 
     }
-
-    protected async Task GetBrandDetails(int id)
-    {
-        var brand = await _brandApi.GetBrandByIdAsync(id);
-        if (brand.StatusCode == System.Net.HttpStatusCode.OK && brand.Data != null)
-        {
-            BrandName = brand.Data.BrandName;
-            BrandLogoPreview = brand.Data.Logo;
-        }
-    }
-
-    private async Task SubmitAsync() 
-    {
-        bool isSuccessfullyUpsert = false;
-
-        if (BrandId != 0) 
-        { 
-            var request = new UpdateBrandRequest
-            {
-                    BrandId = BrandId,
-                    BrandName = BrandName,
-                    LogoImageBase64String=BrandLogoPreview
-            };
-            isSuccessfullyUpsert = await UpdateBrand(request);
-        }
-        else
-        {
-            var request = new CreateBrandRequest
-            {        
-                    BrandName = BrandName
-            };
-
-            isSuccessfullyUpsert = await CreateBrand(request,_files);
-        }
-
-        if (OnUpdated.HasDelegate && isSuccessfullyUpsert)
-        {
-            OnUpdated.InvokeAsync(isSuccessfullyUpsert);
-            MudDialog.Close(DialogResult.Ok(true));
-        }
-
-
-    }
-
     private void Cancel() => MudDialog.Cancel();
 
-    public void ClearAttachments() 
-    {
-        BrandLogoPreview = string.Empty;
-    }
+    
 
-
-    private async Task UploadFiles(IBrowserFile file)
-    {
-        ClearAttachments();
-        _files = file;
-        if (file != null)
+    public async Task SubmitAsync() 
+    { 
+        var isSuccessfullyUpsert = await BrandVM.SubmitAsync();
+       
+        if (OnUpdated.HasDelegate && isSuccessfullyUpsert)
         {
-            using var stream = file.OpenReadStream();
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream);
-            base64String = Convert.ToBase64String(memoryStream.ToArray());
-            BrandLogoPreview = $"data:{file.ContentType};base64,{base64String}";
+            await OnUpdated.InvokeAsync(isSuccessfullyUpsert);
+            MudDialog.Close(DialogResult.Ok(true));
         }
     }
 
-    private async Task<bool> UpdateBrand(UpdateBrandRequest request)
-    {
-        var result = await _brandApi.UpdateBrandAsync(request);
-        if (result.StatusCode == System.Net.HttpStatusCode.OK) 
-        {
-            return true;
-        }
-        return false;
-    }
 
-    private async Task<bool> CreateBrand(CreateBrandRequest request,IBrowserFile file)
-    {
-        var result = await _brandApi.CreateBrandAsync(request);
-        if (result.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            return true;
-        }
-        return false;
-    }
+    // protected override async Task OnParametersSetAsync()
+    // {
+    //     if (BrandId != 0)
+    //     {
+    //         //   await GetBrandDetails(BrandId);
+    //         await Task.CompletedTask;
+    //     }
+    //     StateHasChanged();
+    // }
+
+    // protected async Task GetBrandDetails(int id)
+    // {
+    //     var brand = await _brandApi.GetBrandByIdAsync(id);
+    //     if (brand.StatusCode == System.Net.HttpStatusCode.OK && brand.Data != null)
+    //     {
+    //         BrandName = brand.Data.BrandName;
+    //         BrandLogoPreview = brand.Data.Logo;
+    //     }
+    // }
 
 }
     

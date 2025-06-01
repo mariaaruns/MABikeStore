@@ -1,0 +1,10 @@
+﻿<MudChart ChartType="ChartType.Donut" LegendPosition="@LegendPosition" Width="54%" 
+          InputData="@data" InputLabels="@labels">
+</MudChart>
+@code {
+    public double[] data = { 25, 77, 28, 5 };
+    public string[] labels = { "Oil", "Coal", "Gas", "Biomass" };
+
+    public Position LegendPosition { get; set; } = Position.Bottom;
+
+}

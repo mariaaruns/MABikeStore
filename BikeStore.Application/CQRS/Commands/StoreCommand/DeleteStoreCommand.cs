@@ -27,7 +27,7 @@ namespace BikeStore.Application.CQRS.Commands.StoreCommand
             }
             else 
             {
-                await _unitOfWork.StoreRepository.DeleteAsync(getStore);
+                await _unitOfWork.StoreRepository.InactiveAsync(getStore);
                 var result = await _unitOfWork.SaveAsync();
                 return result ;
             }

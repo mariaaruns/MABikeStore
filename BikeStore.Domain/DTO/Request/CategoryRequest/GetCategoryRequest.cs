@@ -9,6 +9,6 @@ namespace BikeStore.Domain.DTO.Request.CategoryRequest
     public class GetCategoryRequest:PaginationInput
     {
         public string? CategoryNameFilter { get; set; } = null!;
-
+        public bool IsActive { get; set; }
     }
 }

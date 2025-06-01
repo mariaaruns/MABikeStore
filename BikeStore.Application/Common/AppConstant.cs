@@ -11,26 +11,25 @@ namespace BikeStore.Application.Common
         public const string CREATED_SUCCESS = "Created successfully";
         public const string UPDATED_SUCCESS = "Updated successfully";
         public const string DELETED_SUCCESS = "Deleted successfully";
-
         public const string CRAETE_FAILED = "Create failed";
         public const string UPDATE_FAILED = "Update failed";
         public const string DELETE_FAILED = "Delete failed";
         public const string RECORDS_NOT_FOUND = "Records not found";
+        public const string INVALID_ID = "Invalid id,request failed";
 
 
         #region UserRoles
         public const string ADMIN      = "ADMIN";
         public const string SUPERADMIN = "SUPERADMIN";
         public const string TECHNICIAN = "TECHNICIAN";
-
         #endregion
 
         #region staticFilePath
-
+        
         public const string AVATAR_PATH = "~/Assets/Uploads/Avatars";
+        public const string BrandUploadPath = "https://localhost:7097/Assets/Uploads/Brands/";
+        
         #endregion
-
-
 
         #region statuscodeMessage
         public const string SUCCESS = "Request processed successfully.";

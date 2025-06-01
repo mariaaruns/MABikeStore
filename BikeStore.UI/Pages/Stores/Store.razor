@@ -1,4 +1,5 @@
 ﻿@page "/Store"
+@using BikeStore.UI.Contracts.Interface
 
 <SectionContent SectionName="page-title">
     <MudChip T="string" Icon="@Icons.Material.Filled.Store" Size="Size.Large" Color="Color.Dark" IconColor="Color.Success">Stores</MudChip>
@@ -6,37 +7,44 @@
 
 
 
-<MudCard>
-
-    <MudCardContent>
-        <MudGrid Spacing="1">
-        <MudItem xs="12" sm=6 md="3">
-        <MudTextField  @bind-Value="@storeName" Label="StoreName" Variant="Variant.Outlined"></MudTextField>
-         </MudItem>
-            <MudItem xs="12" sm=6 md="3">
-        <MudTextField  @bind-Value="@storeName" Label="City" Variant="Variant.Outlined"></MudTextField>
-         </MudItem >
-        </MudGrid>
-    </MudCardContent>
-    <MudCardActions >
-        <MudButton StartIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Class="m-1" Color="Color.Primary">Search</MudButton>
-        <MudButton StartIcon="@Icons.Material.Filled.Clear" Variant="Variant.Filled" Color="Color.Default">Clear</MudButton>
-    </MudCardActions>
-
+<MudCard Class="m-2">
     <MudTabs Elevation="2" Rounded="true" Centered="true">
-        <MudTabPanel Text="Active" BadgeData='"S"'>
-            <MudText>This is Active </MudText>
-            <StoreDataGrid Status="Active"></StoreDataGrid>
-        </MudTabPanel>
-        <MudTabPanel Text="Inactive" BadgeData='"..."' BadgeColor="Color.Dark" >
-            <MudText>This is In Active </MudText>
-            <StoreDataGrid Status="Inactive"></StoreDataGrid>
-        </MudTabPanel>
-        <MudTabPanel Text="Not Opened" BadgeData='"N"' />
+        <MudTabPanel Text="Active" BadgeData='@ActiveStoreCount'>
 
+            @* <StoreDa OnCountChange="getCategoriesCount" Status="Active"></StoreDa> *@
+        </MudTabPanel>
+        <MudTabPanel Text="Inactive" BadgeData='@InactiveStoreCount'  BadgeColor="Color.Dark" >
+            @* <CategoryDataGrid OnCountChange="getCategoriesCount" Status="InActive"></CategoryDataGrid> *@
+        </MudTabPanel>
     </MudTabs>
 
 </MudCard>
+
 @code {
-    private string storeName { get; set; }
+
+    [Inject]
+    private IStoreApi _storeApi{ get; set; }    
+    private int?  ActiveStoreCount{get;set;}=0;
+    private int?  InactiveStoreCount{get;set;}=0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            await getCategoriesCount();
+            StateHasChanged();
+        }
+    }
+
+    private async Task getCategoriesCount() 
+    { 
+        var result = await _storeApi.GetStoreCountAsync();
+        
+        if (result.Data is { })
+        {
+            ActiveStoreCount   = result.Data.ActiveStoreCount;
+            InactiveStoreCount = result.Data.InactiveStoreCount;
+            StateHasChanged();
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ using Mapster;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
@@ -30,22 +31,18 @@ namespace BikeStore.Application.CQRS.Commands.BrandCommand
         public async Task<CreateBrandResponse> Handle(UpdateBrandCommand request, CancellationToken cancellationToken)
         {
             Brand getBrand = await _unitOfWork.BrandRepository.GetByIdAsync(x => x.BrandId == request.Command.BrandId);
-            /*  if (request.Command.Logo!=null) 
+              if (request.Command.FileName!=null && request.Command.ImageBytes!=null) 
               {
                   if (!string.IsNullOrEmpty(getBrand.Logo))
                   {
                    bool isSuccess= await _fileservice.DeleteFileAsync(Path.Combine(request.ImagePath, getBrand.Logo));
 
                   }
-
-
-
-                      var filePath = await _fileservice.SaveFileAsync(request.Command.Logo,request.ImagePath);
-                      getBrand.Logo = filePath;
-              }*/
-            getBrand.BrandName = request.Command.BrandName;
-
-            getBrand.Logo = request.Command.LogoImageBase64String;
+                  var filePath = await _fileservice.SaveFileAsync(request.Command.ImageBytes,request.Command.FileName,request.ImagePath);
+                  
+                getBrand.Logo = filePath;
+              }
+            getBrand.BrandName = request.Command.BrandName;            
             var result = await _unitOfWork.BrandRepository.UpdateExistingBrandAsync(getBrand);
             var IsSuccess = await _unitOfWork.SaveAsync();
             if (IsSuccess)

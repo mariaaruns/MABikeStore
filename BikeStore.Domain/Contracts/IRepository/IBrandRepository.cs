@@ -20,5 +20,7 @@ namespace BikeStore.Domain.Contracts.IRepository
         Task<GetBrandCount> GetBrandCountAsync();
 
         Task<bool> DeleteBrandAsync(int BrandId);
+
+        
     }
 }

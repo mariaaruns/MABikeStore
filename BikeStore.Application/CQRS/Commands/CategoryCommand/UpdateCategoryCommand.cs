@@ -34,11 +34,12 @@ namespace BikeStore.Application.CQRS.Commands.CategoryCommand
             getCategory.CategoryName = command.request.CategoryName;
             
             var response = await _unitOfWork.CategoryRepository.UpdateCategoryAsync(getCategory);
-            
-            if (response != null) 
-            {
-                return response.Adapt<GetCategoryResposne>();
-            }
+            var isSuccess=await _unitOfWork.SaveAsync();
+               
+            if (response != null && isSuccess) 
+                {
+                    return response.Adapt<GetCategoryResposne>();
+                }
 
             return default;
         }

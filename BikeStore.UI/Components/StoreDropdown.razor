@@ -1,37 +1,71 @@
 ﻿@using System.Globalization
-
+@using BikeStore.Domain.DTO.Response.LookupResponse
+@inject GlobalStoreFilterService _StoreState
 <style>
     .txt_white{
     color:white;
     }
     .drp_width{
- padding:0px
+    padding:0px
     }
 </style>
 
+
 <div class="w-auto">
-    <MudSelect  @bind-Value="enumValue" 
-    TransformOrigin="Origin.CenterCenter" 
+    <MudSelect T="GetDropdownResponse" 
+    Value="_selectedStore"
+    ToStringFunc="(s => s?.Text)"
     Variant="Variant.Text"
     AdornmentIcon="@Icons.Material.Filled.Store"
-               Adornment="Adornment.Start" Class="drp_width" InputClass="txt_white" OuterClass="txt_white" 
-    AdornmentColor="Color.Success">
-    @foreach (Store item in Enum.GetValues(typeof(Store)))
-    {
-        <MudSelectItem Value="@(item)">@item</MudSelectItem>
-    }
-</MudSelect>
-</div>
-@code {
-    @code {
-        private string stringValue { get; set; }
-        private Store enumValue { get; set; } = Store.SantaCruzBikes;
-        public enum Store
+    Adornment="Adornment.Start"
+    Class="drp_width"
+    InputClass="txt_white"
+    OuterClass="txt_white"
+    AdornmentColor="Color.Success"
+    ValueChanged="OnStoreChanged">
+        @foreach (var store in _StoreState.Stores)
         {
-            SantaCruzBikes,
-            BaldwinBikes ,
-            RowlettBikes 
+            <MudSelectItem Value="store">@store.Text</MudSelectItem>
+        }
+    </MudSelect>
+</div>
+
+@code {
+    private GetDropdownResponse? _selectedStore;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _selectedStore = _StoreState.Store;
+        if (_selectedStore is { Text: null })
+        {
+            _selectedStore = _StoreState.Stores.FirstOrDefault();
+        }
+
+        await Task.CompletedTask;
+    }
+    // protected override void OnAfterRender(bool firstRender)
+    // {
+    //     if (firstRender) {
+
+    //         if (_selectedStore is { Text:null}) 
+    //         {
+    //             _selectedStore = _StoreState.Stores.FirstOrDefault();
+    //             StateHasChanged();
+    //         }
+
+            
+    //     }
+    // }
+
+    private void OnStoreChanged(GetDropdownResponse? newStore)
+    {
+        if (newStore != null)
+        {
+            _selectedStore = newStore;
+            _StoreState.SetStore(newStore);
         }
     }
-
 }
+
+
+

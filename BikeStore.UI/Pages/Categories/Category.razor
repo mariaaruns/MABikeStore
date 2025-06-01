@@ -1,8 +1,37 @@
 ﻿@page "/Category"
-<SectionContent SectionName="page-title"><MudChip T="string" Icon="@Icons.Material.Filled.Category" Size="Size.Large" Color="Color.Dark" IconColor="Color.Success">Categories</MudChip>   </SectionContent>
+@using BikeStore.UI.Contracts.Interface
+@using BikeStore.UI.ViewModel
+@inject   ICategoryApi _categoryApi
+<MudCard Class="m-2">
+    <MudTabs Elevation="2" Rounded="true" Centered="true">
+        <MudTabPanel Text="Active" BadgeData='@CategoryVM.ActiveCategoryCount'>
 
-<h3>Category</h3>
+            <CategoryDataGrid OnCountChange="CategoryVM.GetCategoryCount" Status="Active" CategoryVM="CategoryVM"></CategoryDataGrid>
+        </MudTabPanel>
+        <MudTabPanel Text="Inactive" BadgeData='@CategoryVM.InactiveCategoryCount' BadgeColor="Color.Dark">
+            <CategoryDataGrid OnCountChange="CategoryVM.GetCategoryCount" Status="InActive" CategoryVM="CategoryVM"></CategoryDataGrid>
+        </MudTabPanel>
+    </MudTabs>
+
+</MudCard>
 
 @code {
+    CategoryViewModel CategoryVM; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        CategoryVM = new CategoryViewModel(_categoryApi);
+        await Task.CompletedTask;
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            await CategoryVM.GetCategoryCount();
+            StateHasChanged();
+        }
+    }
 
 }
+

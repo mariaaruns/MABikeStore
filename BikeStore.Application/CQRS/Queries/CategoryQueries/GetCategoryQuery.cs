@@ -28,6 +28,8 @@ namespace BikeStore.Application.CQRS.Queries.CategoryQueries
             var source = await _unitOfWork.CategoryRepository.GetAllAsync();
             source = source.Where(
                 x => (string.IsNullOrEmpty(query.request.CategoryNameFilter) || x.CategoryName.Contains(query.request.CategoryNameFilter))
+                && x.IsActive==query.request.IsActive
+                
             );
 
             var result = _paginationService.Pagination(source, query.request);

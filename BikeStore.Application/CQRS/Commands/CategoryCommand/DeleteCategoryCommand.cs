@@ -10,23 +10,21 @@ using System.Threading.Tasks;
 
 namespace BikeStore.Application.CQRS.Commands.CategoryCommand
 {
-
-    public record DeleteCategoryCommand(int id):ICommand<bool>;
+    public record DeleteCategoryCommand(int id) : ICommand<bool>;
     public class DeleteCategoryCommandHandler(IUnitOfWork unitOfWork) : ICommandHandler<DeleteCategoryCommand, bool>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-                var Category = await _unitOfWork.CategoryRepository.GetByIdAsync(x => x.CategoryId == request.id);
-                if (Category is not null)
-                {
-                 await _unitOfWork.CategoryRepository.DeleteAsync(Category);
-                 return await _unitOfWork.SaveAsync();
-                }
-            
+            var Category = await _unitOfWork.CategoryRepository.GetByIdAsync(x => x.CategoryId == request.id);
 
-            return false;
+            if (Category is null)
+            {
+                throw new FluentValidation.ValidationException("Invalid category");
+            }
+            await _unitOfWork.CategoryRepository.InactiveAsync(Category);
+            return await _unitOfWork.SaveAsync();
         }
     }
 }

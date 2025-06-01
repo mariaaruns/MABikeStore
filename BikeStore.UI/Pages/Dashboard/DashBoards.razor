@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles ="SUPER ADMIN")]
+@attribute [Authorize(Roles ="SUPERADMIN")]
+
 
 <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="false">
     <SectionContent SectionName="page-title">
@@ -10,8 +11,9 @@
 
 
 <MudGrid Justify="Justify.Center" Class="my-2">
+
     <MudGrid Justify="Justify.FlexEnd">
-        <MudItem xs="2" Class="mt-1">
+        <MudItem xs="4" sm="2" Class="mt-1">
             <label>Year</label>
             <MudSelect @bind-Value="enumValue"
             TransformOrigin="Origin.CenterCenter"
@@ -27,94 +29,98 @@
         </MudSelect>
     </MudItem>
     </MudGrid>
+
     <MudFlexBreak/>
-    <MudItem xs="12" sm="6"  lg="3">
 
-        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.Pink.Default};")>
-            <MudCardContent>
-                <MudText Class="txt-white" >Story of the day</MudText>
-                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
     <MudItem xs="12" sm="6"  lg="3">
-        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.DeepPurple.Default};")>
+        <MudCard Class="pop-effect" Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.Pink.Default};")>
             <MudCardContent>
-                <MudText>Story of the day</MudText>
-                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+                <MudItem Class="d-flex justify-space-between">
+                    <MudText>Delivered</MudText>
+                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.LocalShipping"></MudIcon>
+                </MudItem>
+
+                <MudText Align="Align.Center" Typo="Typo.h5">12</MudText>
             </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-            </MudCardActions>
         </MudCard>
     </MudItem>
 
     <MudItem xs="12" sm="6"  lg="3">
-        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.Orange.Darken4};")>
+        <MudCard Class="pop-effect" Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.DeepPurple.Default};")>
             <MudCardContent>
-                <MudText>Story of the day</MudText>
-                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+                <MudItem Class="d-flex justify-space-between">
+                    <MudText>Upcomning Delivery</MudText>
+                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.PendingActions"></MudIcon>
+                </MudItem>
+
+                <MudText Align="Align.Center" Typo="Typo.h5">02</MudText>
             </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-            </MudCardActions>
         </MudCard>
     </MudItem>
+
+    <MudItem xs="12" sm="6"  lg="3">
+        <MudCard Class="pop-effect" Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.Orange.Darken4};")>
+            <MudCardContent>
+                <MudItem Class="d-flex justify-space-between">
+                    <MudText>Repaired</MudText> 
+                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle"></MudIcon>
+                </MudItem>
+                
+                <MudText Align="Align.Center" Typo="Typo.h5">42</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
     <MudItem xs="12" sm="6" lg="3">
-        <MudCard Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.BlueGray.Darken4};")>
+        <MudCard Class="pop-effect" Elevation="10" Style=@($"color:{Colors.Gray.Lighten5}; background:{Colors.BlueGray.Darken4};")>
             <MudCardContent>
-                <MudText>Story of the day</MudText>
-                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+                <MudItem Class="d-flex justify-space-between">
+                    <MudText>Pending Repair</MudText>
+                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.TireRepair"></MudIcon>
+                </MudItem>
+
+                <MudText Align="Align.Center" Typo="Typo.h5">18</MudText>
             </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-            </MudCardActions>
         </MudCard>
-
-
     </MudItem>
 
     <MudItem  sm="12" md="6" >
-        <MudCard>
+        <MudCard Elevation="0">
             <MudCardHeader>
 
                 <CardHeaderContent>
-                    <MudText Typo="Typo.body1">Line Chart</MudText>
+                    <MudText Typo="Typo.body1">Bar Chart</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.CandlestickChart" Color="Color.Default" />
+                    <MudIconButton Icon="@Icons.Material.Filled.BarChart" Color="Color.Default" />
                 </CardHeaderActions>
             </MudCardHeader>
-            <MudCardMedia Image="images/pilars.jpg"  Height="250" />
+                  
             <MudCardContent>
-                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                <LineChart/>
             </MudCardContent>
         </MudCard>
 
     </MudItem>
+    
     <MudItem sm="12" md="6">
-        <MudCard>
+        <MudCard Elevation="0">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.body1">Pie chart</MudText>
+                    <MudText Typo="Typo.body1">Donut chart</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.PieChart" Color="Color.Default" />
+                    <MudIconButton Icon="@Icons.Material.Filled.DonutSmall" Color="Color.Default" />
                 </CardHeaderActions>
             </MudCardHeader>
-            <MudCardMedia Image="images/pilars.jpg" Height="250" />
-            <MudCardContent>
-                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+            <MudCardContent Class="" >
+                <DonutChart/>
             </MudCardContent>
         </MudCard>
 
     </MudItem>
-
+    
     <MudItem sm="12" md="6">
-
         <MudCard Elevation="5">
             <MudCardHeader>
                 <CardHeaderContent>
@@ -129,11 +135,9 @@
                 <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
             </MudCardContent>
         </MudCard>
-
     </MudItem>
 
     <MudItem sm="12" md="6">
-
         <MudCard Elevation="5">
             <MudCardHeader>
                 <CardHeaderContent>
@@ -144,6 +148,7 @@
                 <CardHeaderActions>
                     <MudIconButton Icon="@Icons.Material.Filled.TableRows" Color="Color.Default" />
                 </CardHeaderActions>
+
             </MudCardHeader>
             <MudCardMedia Image="images/pilars.jpg" Height="250" />
             <MudDivider />  
@@ -154,17 +159,32 @@
 
     </MudItem>
 
-
 </MudGrid>
 
 <style>
-    .txt_white {
+    
+    .txt_white 
+    {
         color: black;
     }
-
-    .drp_width {
+    
+    .drp_width 
+    {
         padding: 0px
     }
+    .chartContainerWidth{
+    width:10rem;
+    }
+
+    .pop-effect {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .pop-effect:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            cursor:pointer;
+        }
 </style>
 
 @code {

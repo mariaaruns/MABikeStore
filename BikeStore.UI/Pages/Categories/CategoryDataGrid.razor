@@ -1,0 +1,148 @@
+﻿@using System.Net.Http.Json
+@using System.Threading
+@using BikeStore.Domain.DTO
+@using BikeStore.Domain.DTO.Request.BrandRequest
+@using BikeStore.Domain.DTO.Request.CategoryRequest
+@using BikeStore.Domain.DTO.Response.BrandResponse
+@using BikeStore.Domain.DTO.Response.CategoryResponse
+@using BikeStore.UI.Components
+@using BikeStore.UI.Contracts.Interface
+@using BikeStore.UI.ViewModel
+@inject IDialogService DialogService
+
+<MudTable FixedHeader="true" Height="300px" FixedFooter="true" ServerData="ServerReload" Dense="true" Loading="@(!CategoryVM.isOkResponse)" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudButton Color="Color.Primary" onclick="@(()=>OpenEditDialog(0,""))" ButtonType="ButtonType.Button" IconColor="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add">Add Brand</MudButton>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+        AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="sign_field" T="GetCategoryResposne"><b>Name</b></MudTableSortLabel></MudTh>
+        <MudTh><b>Action</b></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+
+        <MudTd DataLabel="Name">@context.CategoryName</MudTd>
+        <MudTd DataLabel="Action">
+            <MudButtonGroup Color="Color.Transparent" Variant="Variant.Filled">
+                @if (Status == "Active")
+                {
+                    <MudIconButton Color="Color.Secondary" onclick="@(()=>OpenEditDialog(context.CategoryId,context.CategoryName))" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                }
+                <MudIconButton Color="Color.Error" onclick="@(()=>DeleteAlert(context.CategoryId))" Icon="@(Status == "Active" ?Icons.Material.Filled.Delete :Icons.Material.Filled.RestoreFromTrash)"></MudIconButton>
+            </MudButtonGroup>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+
+    [Parameter]
+    public CategoryViewModel CategoryVM { get; set; }
+
+    [Parameter]
+    public string Status { get; set; }
+
+    [Parameter]
+    public EventCallback OnCountChange { get; set; }
+
+    //private IEnumerable<GetBrandResponse> pagedData;
+    private MudTable<GetCategoryResposne> table;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CategoryVM.status = Status;
+        await Task.Delay(600);
+    }
+
+    private async Task<TableData<GetCategoryResposne>> ServerReload(TableState state, CancellationToken token)
+    {
+        int pagew = table.CurrentPage;
+        var categoryRequest = new GetCategoryRequest
+            {
+                CategoryNameFilter = CategoryVM.searchString,
+                PageNumber = state.Page + 1,
+                PageSize = state.PageSize,
+                IsActive = Status=="Active"
+            };
+
+        CategoryVM.data =await CategoryVM.GetAllCategory(categoryRequest);
+
+        await Task.Delay(300, token);
+
+        var totalItems = CategoryVM.data.TotalNoOfRecords;
+
+        return new TableData<GetCategoryResposne>() { TotalItems = totalItems, Items = CategoryVM.data.Items };
+    }
+
+
+
+
+    private void OnSearch(string text)
+    {
+        CategoryVM.searchString = text;
+        table.ReloadServerData();
+    }
+
+
+
+
+    protected Task OpenEditDialog(int id, string brandName)
+    {
+        CategoryVM.CategoryId = id;
+        CategoryVM.CategoryName = brandName;
+        var parameters = new DialogParameters<EditCategory>
+        {
+            { "CategoryVM",CategoryVM},
+            {"OnUpdated",EventCallback.Factory.Create<bool>(this,ReloadTable) }
+        };
+        
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+        return DialogService.ShowAsync<EditCategory>("Edit Category", parameters, options);
+    }
+
+    protected Task DeleteAlert(int id)
+    {
+        var parameters = new DialogParameters<DeleteDialog>
+        {
+            { x => x.ContentText,  $"Do you really want to {(Status == "Active" ? "Inactive" : "Active")} these records?"},
+            { x => x.ButtonText, $"{(Status == "Active" ? "Inactive" : "Restore")}"},
+            { x => x.Color, Color.Error },
+            { x => x.id, id },
+            { "OnDelete", EventCallback.Factory.Create<int>(this, ConfirmDelete) }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        return DialogService.ShowAsync<DeleteDialog>("Active/Inactive Confirmation", parameters, options);
+    }
+
+    
+    private async Task ReloadTable(bool isSuccess)
+    {
+        if (isSuccess)
+            await table.ReloadServerData();
+    }
+
+
+    private async Task ConfirmDelete(int id)
+    {
+        var isDeleted = await CategoryVM.DeleteCategory(id);
+        if (isDeleted)
+        {
+            StateHasChanged();
+            await OnCountChange.InvokeAsync();
+        }
+    }
+
+}

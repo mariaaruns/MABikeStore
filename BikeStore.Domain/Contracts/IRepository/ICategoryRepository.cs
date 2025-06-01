@@ -12,5 +12,7 @@ namespace BikeStore.Domain.Contracts.IRepository
     public interface ICategoryRepository:IGenericRepository<Category>
     {
         Task<Category> UpdateCategoryAsync(Category request);
+        Task<GetCategoryCountResponse> GetCategoryCountAsync();
+        Task<bool> InactiveAsync(Category entity);
     }
 }
